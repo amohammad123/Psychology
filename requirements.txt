@@ -1,0 +1,36 @@
+# general modules
+django>=3.2,<3.3
+python-decouple
+pillow
+djangorestframework
+djangorestframework-simplejwt
+# django-filter
+
+# instead of jwt for version 2
+# djoser
+
+
+# third party modules
+markdown
+# coreapi  #not necessary
+
+# swagger
+drf-yasg[validation]
+
+# email third party module
+django-mail-templated
+
+# refactoring and tests
+# black
+# flake8
+# pytest
+# pytest-django
+
+# background process and cash
+# redis
+# celery
+# django-celery-beat
+# django-redis
+
+# deployment module
+# gunicorn
