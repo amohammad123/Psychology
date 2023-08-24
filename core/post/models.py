@@ -25,7 +25,7 @@ class Category(BaseModel):
 
 class UserCategory(BaseModel):
     category = models.ForeignKey(Category, verbose_name='دسته بندی', on_delete=models.CASCADE)
-    user = models.ForeignKey('account.v1.models.Trappist', verbose_name='کاربر', on_delete=models.CASCADE)
+    user = models.ForeignKey('account.Trappist', verbose_name='کاربر', on_delete=models.CASCADE)
     price = models.BigIntegerField(verbose_name='قیمت', blank=True, null=True)
     is_valid = models.BooleanField(verbose_name='فعال')
 
@@ -47,7 +47,7 @@ class Post(BaseModel):
     comment_status = models.CharField(verbose_name='وضعیت کامنت', max_length=20, choices=comment_choices, blank=True,
                                       null=True)
     views = models.PositiveIntegerField(verbose_name='تعداد بازدید کنندگان', default=0, blank=True, null=True)
-    author = models.ForeignKey('account.v1.models.Trappist', verbose_name='نویسنده', on_delete=models.CASCADE,
+    author = models.ForeignKey('account.Trappist', verbose_name='نویسنده', on_delete=models.CASCADE,
                                related_name='author')
     category = models.ForeignKey('Category', verbose_name='دسته بندی', on_delete=models.CASCADE, blank=True, null=True)
     tags = models.ManyToManyField('Tag', verbose_name='تگ ها', blank=True, null=True)
