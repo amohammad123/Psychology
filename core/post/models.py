@@ -24,10 +24,10 @@ class Category(BaseModel):
 
 
 class UserCategory(BaseModel):
+    user = models.ForeignKey('account.ChoiceUser', on_delete=models.CASCADE,
+                             verbose_name='کاربر')
     category = models.ForeignKey(Category, verbose_name='دسته بندی', on_delete=models.CASCADE)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name='کاربر', on_delete=models.CASCADE)
-    price = models.BigIntegerField(verbose_name='قیمت', blank=True, null=True)
-    is_valid = models.BooleanField(verbose_name='فعال')
+    is_valid = models.BooleanField(verbose_name='فعال', default=False)
 
     class Meta:
         verbose_name = 'دسته بندی کاربر'
@@ -36,6 +36,22 @@ class UserCategory(BaseModel):
 
     def __str__(self):
         return self.title
+
+
+class TrappistCategoryPrice(BaseModel):
+    trappist = models.ForeignKey('account.Trappist', on_delete=models.CASCADE,
+                                 verbose_name='درمانگر')
+    category = models.ForeignKey(Category, verbose_name='دسته بندی', on_delete=models.CASCADE)
+    price = models.BigIntegerField(verbose_name='قیمت')
+    is_valid = models.BooleanField(verbose_name='فعال', default=False)
+
+    class Meta:
+        verbose_name = 'قیمت تخصص درمانگر'
+        verbose_name_plural = verbose_name
+        db_table = 'trappist_category_price'
+
+    def __str__(self):
+        return self.trappist + ' - ' + self.price
 
 
 class Post(BaseModel):
@@ -47,6 +63,7 @@ class Post(BaseModel):
         ('open', 'باز'),
         ('closure', 'بسته')
     )
+
     title = models.CharField(verbose_name='عنوان', max_length=200)
     image = models.ImageField(verbose_name='تصویر', upload_to='user_images', null=True, blank=True)
     body = models.TextField(verbose_name='محتوا', blank=True, null=True)
@@ -55,10 +72,11 @@ class Post(BaseModel):
     comment_status = models.CharField(verbose_name='وضعیت کامنت', max_length=20, choices=comment_choices, blank=True,
                                       null=True)
     views = models.PositiveIntegerField(verbose_name='تعداد بازدید کنندگان', default=0, blank=True, null=True)
-    author = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name='نویسنده', on_delete=models.CASCADE,
-                               related_name='author')
+
+    author = models.ForeignKey('account.ChoiceUser', on_delete=models.CASCADE,
+                               verbose_name='کاربر')
     category = models.ForeignKey(Category, verbose_name='دسته بندی', on_delete=models.CASCADE, blank=True, null=True)
-    tags = models.ManyToManyField('Tag', verbose_name='تگ ها', blank=True, null=True)
+    tags = models.ManyToManyField('Tag', verbose_name='تگ ها')
 
     class Meta:
         verbose_name = 'پست'
@@ -92,8 +110,9 @@ class Tag(BaseModel):
 
 
 class Comment(BaseModel):
+    user = models.ForeignKey('account.ChoiceUser', on_delete=models.CASCADE,
+                                 verbose_name='کاربر')
     body = models.TextField(verbose_name='محتوا', max_length=300)
-    author = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name='نویسنده', on_delete=models.CASCADE)
     post = models.ForeignKey(Post, verbose_name='پست', on_delete=models.CASCADE, related_name='post')
     parent_comment = models.ForeignKey('self', verbose_name="کامنت پدر", blank=True, null=True,
                                        on_delete=models.CASCADE)

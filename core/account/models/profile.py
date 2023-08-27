@@ -47,3 +47,23 @@ class Trappist(BaseModel):
 
     def __str__(self):
         return f'{self.first_name} {self.last_name}'
+
+
+class ChoiceUser(BaseModel):
+    user_choices = (
+        ('client', 'مراجع'),
+        ('trappist', 'درمانگر')
+    )
+    user_type = models.CharField(verbose_name='', max_length=15, choices=user_choices)
+    client = models.ForeignKey(Client, on_delete=models.CASCADE,
+                               verbose_name='مراحع', blank=True, null=True)
+    trappist = models.ForeignKey(Trappist, on_delete=models.CASCADE,
+                                 verbose_name='درمانگر', blank=True, null=True)
+    user_id = models.IntegerField(verbose_name='شناسه کاربر', blank=True, null=True)
+
+    def __str__(self):
+        if self.trappist is not None:
+            user = self.trappist
+        else:
+            user = self.client
+        return self.user_choices + ' - ' + user

@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'account',
     'base',
     'post',
+    'exam'
 ]
 
 MIDDLEWARE = [

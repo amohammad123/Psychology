@@ -10,12 +10,12 @@ from conf.model import BaseModel
 class Test(BaseModel):
     category = models.ForeignKey('post.Category', verbose_name='دسته بندی', on_delete=models.CASCADE)
     name = models.CharField(verbose_name='نام', max_length=50)
-    parent_test = models.ForeignKey('self', verbose_name='دسته بندی پدر', blank=True, null=True)
+    parent_test = models.ForeignKey('self', verbose_name='دسته بندی پدر', on_delete=models.CASCADE, blank=True,
+                                    null=True)
     index = models.IntegerField(verbose_name='الویت', blank=True, null=True)
     time = models.IntegerField(verbose_name='زمان', blank=True, null=True)
     min_age = models.IntegerField(verbose_name='حداقل سن', blank=True, null=True)
     max_age = models.IntegerField(verbose_name='حداکثر سن', blank=True, null=True)
-    price = models.IntegerField(verbose_name='قیمت', blank=True, null=True)
     explanation = models.TextField(verbose_name='توضیحات', blank=True, null=True)
     question_count = models.IntegerField(verbose_name='تعداد سوالات', blank=True, null=True)
 
@@ -28,8 +28,28 @@ class Test(BaseModel):
         return f'{self.name} ,parent: {self.parent_test}'
 
 
+class TestPayment(BaseModel):
+    test = models.ForeignKey(Test, verbose_name='تست', on_delete=models.CASCADE)
+    original_price = models.IntegerField(verbose_name='قیمت اصلی', blank=True, null=True)
+    offer_price = models.IntegerField(verbose_name='قیمت با تخفیف', blank=True, null=True)
+
+    def get_percent(self):
+        off_price = (self.original_price - self.offer_price)
+        percent = (off_price / self.original_price) * 100
+        return percent
+
+    class Meta:
+        verbose_name = 'قیمت تست ها'
+        verbose_name_plural = 'قیمت تست'
+        db_table = 'test_payment'
+
+    def __str__(self):
+        return f'{self.test} {self.original_price}'
+
+
 class UserTest(BaseModel):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name='کاربر', on_delete=models.CASCADE)
+    user = models.ForeignKey('account.ChoiceUser', on_delete=models.CASCADE,
+                                 verbose_name='کاربر')
     test = models.ForeignKey(Test, verbose_name='تست', on_delete=models.CASCADE)
     score = models.IntegerField(verbose_name='امتیاز', blank=True, null=True)
     start_time = models.IntegerField(verbose_name='زمان شروع', blank=True, null=True)
