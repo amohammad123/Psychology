@@ -53,6 +53,9 @@ class CustomTrappistAdmin(admin.ModelAdmin):
 
 
 admin.site.register(user.CustomUser, CustomUserAdmin)
+admin.site.register(user.PhoneCode)
 admin.site.register(profile.Client, CustomClientAdmin)
 admin.site.register(profile.Trappist, CustomTrappistAdmin)
-admin.site.register(user.PhoneCode)
+admin.site.register(profile.ChoiceUser)
+admin.site.register(profile.Document)
+admin.site.register(profile.DocumentField)

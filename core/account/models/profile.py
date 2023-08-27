@@ -67,3 +67,35 @@ class ChoiceUser(BaseModel):
         else:
             user = self.client
         return self.user_choices + ' - ' + user
+
+    class Meta:
+        verbose_name = 'کاربر انتخابی'
+        verbose_name_plural = verbose_name
+        db_table = 'choice_user'
+
+
+class Document(BaseModel):
+    name = models.CharField(verbose_name='نام', max_length=50)
+    category = models.ForeignKey('post.UserCategory', verbose_name='دسته بندی کاربر', on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name = 'مدارک'
+        verbose_name_plural = verbose_name
+        db_table = 'document'
+
+    def __str__(self):
+        return f'{self.name} - {self.category}'
+
+
+class DocumentField(BaseModel):
+    name = models.CharField(verbose_name='', max_length=50)
+    file = models.FileField(verbose_name='', blank=True, null=True)
+    document = models.ForeignKey(Document, verbose_name='', on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name = 'مدرک'
+        verbose_name_plural = verbose_name
+        db_table = 'document_field'
+
+    def __str__(self):
+        return f'{self.document} - {self.name}'
