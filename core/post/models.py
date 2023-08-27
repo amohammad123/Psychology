@@ -57,7 +57,7 @@ class Post(BaseModel):
     views = models.PositiveIntegerField(verbose_name='تعداد بازدید کنندگان', default=0, blank=True, null=True)
     author = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name='نویسنده', on_delete=models.CASCADE,
                                related_name='author')
-    category = models.ForeignKey('Category', verbose_name='دسته بندی', on_delete=models.CASCADE, blank=True, null=True)
+    category = models.ForeignKey(Category, verbose_name='دسته بندی', on_delete=models.CASCADE, blank=True, null=True)
     tags = models.ManyToManyField('Tag', verbose_name='تگ ها', blank=True, null=True)
 
     class Meta:
