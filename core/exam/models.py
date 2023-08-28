@@ -31,8 +31,8 @@ class Test(BaseModel):
 
 class TestPayment(BaseModel):
     test = models.ForeignKey(Test, verbose_name='تست', on_delete=models.CASCADE, related_name='payment')
-    original_price = models.IntegerField(verbose_name='قیمت اصلی', blank=True, null=True)
-    offer_price = models.IntegerField(verbose_name='قیمت با تخفیف', blank=True, null=True)
+    original_price = models.PositiveIntegerField(verbose_name='قیمت اصلی', blank=True, null=True)
+    offer_price = models.PositiveIntegerField(verbose_name='قیمت با تخفیف', blank=True, null=True)
 
     def get_percent(self):
         off_price = (self.original_price - self.offer_price)

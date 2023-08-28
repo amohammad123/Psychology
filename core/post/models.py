@@ -72,14 +72,12 @@ class Post(BaseModel):
                                  related_name='posts')
     tags = models.ManyToManyField('Tag', verbose_name='تگ ها', related_name='posts')
     title = models.CharField(verbose_name='عنوان', max_length=200)
-    image = models.ImageField(verbose_name='تصویر', upload_to='user_images', null=True, blank=True)
     body = models.TextField(verbose_name='محتوا', blank=True, null=True)
     published_date = models.BigIntegerField(verbose_name='رمان انتشار', blank=True, null=True)
     status = models.CharField(verbose_name='وضعیت', max_length=20, choices=status_choices, blank=True, null=True)
     comment_status = models.CharField(verbose_name='وضعیت کامنت', max_length=20, choices=comment_choices, blank=True,
                                       null=True)
     views = models.PositiveIntegerField(verbose_name='تعداد بازدید کنندگان', default=0, blank=True, null=True)
-
 
     class Meta:
         verbose_name = 'پست'
@@ -97,6 +95,22 @@ class Post(BaseModel):
     def viewed(self):
         self.views += 1
         self.save(update_fields=['views'])
+
+
+class PostFile(BaseModel):
+    post = models.ForeignKey(Post, verbose_name='پست', on_delete=models.CASCADE, related_name='files')
+    file = models.FileField(verbose_name='فایل', upload_to='post_files', blank=True, null=True)
+    is_main = models.BooleanField(verbose_name='فایل اصلی', default=False)
+    is_valid = models.BooleanField(verbose_name='معتبر', default=True)
+    order = models.PositiveIntegerField(verbose_name='ترتیب', blank=True, null=True)
+
+    class Meta:
+        verbose_name = 'فایل های پست'
+        verbose_name_plural = verbose_name
+        db_table = 'post_file'
+
+    def __str__(self):
+        return f'{self.post} - {self.is_main} - {self.is_valid}'
 
 
 class Tag(BaseModel):
