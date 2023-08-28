@@ -8,6 +8,7 @@ from conf.model import BaseModel
 
 class Settings(BaseModel):
     site_name = models.CharField(verbose_name="نام سایت", max_length=200, null=False, blank=False, default='')
+    logo = models.FileField(verbose_name='لوگو', upload_to='logo', blank=True, null=True)
     site_description = models.TextField(verbose_name="توضیحات سایت", max_length=1000, null=False, blank=False,
                                         default='')
     site_seo_description = models.TextField(verbose_name="توضیحات سئوی سایت", max_length=1000, null=False, blank=False,

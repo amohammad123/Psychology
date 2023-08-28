@@ -6,10 +6,10 @@ from conf.model import BaseModel
 
 
 class Category(BaseModel):
-    name = models.CharField(max_length=100, verbose_name='نام')
     parent_category = models.ForeignKey('self', verbose_name="دسته بندی پدر", blank=True, null=True,
-                                        on_delete=models.CASCADE)
-    image = models.ImageField(verbose_name='تصویر', upload_to='user_images', null=True, blank=True)
+                                        on_delete=models.CASCADE, related_name='parents_category')
+    name = models.CharField(max_length=100, verbose_name='نام')
+    image = models.ImageField(verbose_name='تصویر', upload_to='category_images', null=True, blank=True)
     description = models.TextField(verbose_name='توضیحات', blank=True, null=True)
     color = models.TextField(verbose_name='رنگ', blank=True, null=True)
     index = models.IntegerField(default=0, verbose_name="مرتب سازی بر اساس عدد - هرچه کوچکتر مقدم تر")
@@ -25,8 +25,9 @@ class Category(BaseModel):
 
 class UserCategory(BaseModel):
     user = models.ForeignKey('account.ChoiceUser', on_delete=models.CASCADE,
-                             verbose_name='کاربر')
-    category = models.ForeignKey(Category, verbose_name='دسته بندی', on_delete=models.CASCADE)
+                             verbose_name='کاربر', related_name='user_category')
+    category = models.ForeignKey(Category, verbose_name='دسته بندی', on_delete=models.CASCADE,
+                                 related_name='user_category')
     is_valid = models.BooleanField(verbose_name='فعال', default=False)
 
     class Meta:
@@ -40,8 +41,9 @@ class UserCategory(BaseModel):
 
 class TrappistCategoryPrice(BaseModel):
     trappist = models.ForeignKey('account.Trappist', on_delete=models.CASCADE,
-                                 verbose_name='درمانگر')
-    category = models.ForeignKey(Category, verbose_name='دسته بندی', on_delete=models.CASCADE)
+                                 verbose_name='درمانگر', related_name='category_price')
+    category = models.ForeignKey(Category, verbose_name='دسته بندی', on_delete=models.CASCADE,
+                                 related_name='trappist_price')
     price = models.BigIntegerField(verbose_name='قیمت')
     is_valid = models.BooleanField(verbose_name='فعال', default=False)
 
@@ -64,6 +66,11 @@ class Post(BaseModel):
         ('closure', 'بسته')
     )
 
+    author = models.ForeignKey('account.ChoiceUser', on_delete=models.CASCADE,
+                               verbose_name='کاربر', related_name='posts')
+    category = models.ForeignKey(Category, verbose_name='دسته بندی', on_delete=models.CASCADE, blank=True, null=True,
+                                 related_name='posts')
+    tags = models.ManyToManyField('Tag', verbose_name='تگ ها', related_name='posts')
     title = models.CharField(verbose_name='عنوان', max_length=200)
     image = models.ImageField(verbose_name='تصویر', upload_to='user_images', null=True, blank=True)
     body = models.TextField(verbose_name='محتوا', blank=True, null=True)
@@ -73,10 +80,6 @@ class Post(BaseModel):
                                       null=True)
     views = models.PositiveIntegerField(verbose_name='تعداد بازدید کنندگان', default=0, blank=True, null=True)
 
-    author = models.ForeignKey('account.ChoiceUser', on_delete=models.CASCADE,
-                               verbose_name='کاربر')
-    category = models.ForeignKey(Category, verbose_name='دسته بندی', on_delete=models.CASCADE, blank=True, null=True)
-    tags = models.ManyToManyField('Tag', verbose_name='تگ ها')
 
     class Meta:
         verbose_name = 'پست'
@@ -111,11 +114,11 @@ class Tag(BaseModel):
 
 class Comment(BaseModel):
     user = models.ForeignKey('account.ChoiceUser', on_delete=models.CASCADE,
-                                 verbose_name='کاربر')
-    body = models.TextField(verbose_name='محتوا', max_length=300)
-    post = models.ForeignKey(Post, verbose_name='پست', on_delete=models.CASCADE, related_name='post')
+                             verbose_name='کاربر', related_name='comments')
     parent_comment = models.ForeignKey('self', verbose_name="کامنت پدر", blank=True, null=True,
-                                       on_delete=models.CASCADE)
+                                       on_delete=models.CASCADE, related_name='parents_comment')
+    post = models.ForeignKey(Post, verbose_name='پست', on_delete=models.CASCADE, related_name='comments')
+    body = models.TextField(verbose_name='محتوا', max_length=300)
     is_enable = models.BooleanField(verbose_name='فعال', default=False, blank=False, null=False)
 
     class Meta:

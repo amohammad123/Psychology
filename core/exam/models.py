@@ -8,10 +8,11 @@ from conf.model import BaseModel
 
 
 class Test(BaseModel):
-    category = models.ForeignKey('post.Category', verbose_name='دسته بندی', on_delete=models.CASCADE)
-    name = models.CharField(verbose_name='نام', max_length=50)
+    category = models.ManyToManyField('post.Category', verbose_name='دسته بندی',
+                                      related_name='tests')
     parent_test = models.ForeignKey('self', verbose_name='دسته بندی پدر', on_delete=models.CASCADE, blank=True,
-                                    null=True)
+                                    null=True, related_name='parents_test')
+    name = models.CharField(verbose_name='نام', max_length=50)
     index = models.IntegerField(verbose_name='الویت', blank=True, null=True)
     time = models.IntegerField(verbose_name='زمان', blank=True, null=True)
     min_age = models.IntegerField(verbose_name='حداقل سن', blank=True, null=True)
@@ -29,13 +30,13 @@ class Test(BaseModel):
 
 
 class TestPayment(BaseModel):
-    test = models.ForeignKey(Test, verbose_name='تست', on_delete=models.CASCADE)
+    test = models.ForeignKey(Test, verbose_name='تست', on_delete=models.CASCADE, related_name='payment')
     original_price = models.IntegerField(verbose_name='قیمت اصلی', blank=True, null=True)
     offer_price = models.IntegerField(verbose_name='قیمت با تخفیف', blank=True, null=True)
 
     def get_percent(self):
         off_price = (self.original_price - self.offer_price)
-        percent = (off_price / self.original_price) * 100
+        percent = float(off_price / self.original_price) * 100
         return percent
 
     class Meta:
@@ -49,11 +50,12 @@ class TestPayment(BaseModel):
 
 class UserTest(BaseModel):
     user = models.ForeignKey('account.ChoiceUser', on_delete=models.CASCADE,
-                                 verbose_name='کاربر')
-    test = models.ForeignKey(Test, verbose_name='تست', on_delete=models.CASCADE)
+                             verbose_name='کاربر', related_name='tests')
+    test = models.ForeignKey(Test, verbose_name='تست', on_delete=models.CASCADE, related_name='user_test')
     score = models.IntegerField(verbose_name='امتیاز', blank=True, null=True)
     start_time = models.IntegerField(verbose_name='زمان شروع', blank=True, null=True)
     end_time = models.IntegerField(verbose_name='زمان پایان', blank=True, null=True)
+    description = models.TextField(verbose_name='توضیحات', blank=True, null=True)
     is_valid = models.BooleanField(verbose_name='معتبر', default=False)
     is_done = models.BooleanField(verbose_name='انجام شده', default=False)
 
@@ -68,12 +70,14 @@ class UserTest(BaseModel):
 
 class Question(BaseModel):
     type_choices = (
-        ()
+        ('text', 'متن'),
+        ('image', 'عکس')
     )
+    test = models.ForeignKey(Test, verbose_name='تست', on_delete=models.CASCADE, related_name='questions')
+    answer = models.ManyToManyField('exam.Answer', verbose_name='سوال', related_name='question')
     body = models.TextField(verbose_name='محتوا', blank=True, null=True)
-    file = models.FileField(verbose_name='قایل', blank=True, null=True)
+    file = models.FileField(verbose_name='قایل', upload_to='question_files', blank=True, null=True)
     index = models.IntegerField(verbose_name='اولویت', blank=True, null=True)
-    test = models.ForeignKey(Test, verbose_name='تست', on_delete=models.CASCADE)
     type = models.CharField(verbose_name='نوع تست', max_length=15, choices=type_choices, blank=True, null=True)
     explanation = models.TextField(verbose_name='توضیحات', blank=True, null=True)
 
@@ -88,12 +92,14 @@ class Question(BaseModel):
 
 class Answer(BaseModel):
     answer_choices = (
-        ()
+        ('multiple choice', 'چند گزینه ای'),
+        ('likert', 'لیکرت'),
+        ('yes or no', 'بله یا خیر'),
+        ('descriptive', 'تشریحی')
     )
-    test = models.ForeignKey(Test, verbose_name='تست', on_delete=models.CASCADE)
-    question = models.ForeignKey(Question, verbose_name='سوال', on_delete=models.CASCADE)
+    test = models.ForeignKey(Test, verbose_name='تست', on_delete=models.CASCADE, related_name='answers')
     body = models.TextField(verbose_name='محتوا', blank=True, null=True)
-    file = models.FileField(verbose_name='فایل', blank=True, null=True)
+    file = models.FileField(verbose_name='فایل', upload_to='answer_files', blank=True, null=True)
     type = models.CharField(verbose_name='نوع', max_length=15, choices=answer_choices, blank=True, null=True)
     index = models.IntegerField(verbose_name='اولویت', blank=True, null=True)
     score = models.IntegerField(verbose_name='امتیاز', blank=True, null=True)
@@ -108,9 +114,11 @@ class Answer(BaseModel):
 
 
 class UserAnswer(BaseModel):
-    user_test = models.ForeignKey(UserTest, verbose_name='تست کاربر', on_delete=models.CASCADE)
-    question = models.ForeignKey(Question, verbose_name='سوال', on_delete=models.CASCADE)
-    choices = models.ForeignKey(Answer, verbose_name='جواب کاربر', on_delete=models.CASCADE)
+    user_test = models.ForeignKey(UserTest, verbose_name='تست کاربر', on_delete=models.CASCADE,
+                                  related_name='answers')
+    question = models.ForeignKey(Question, verbose_name='سوال', on_delete=models.CASCADE, related_name='user_answer')
+    choices = models.ForeignKey(Answer, verbose_name='جواب کاربر', on_delete=models.CASCADE, blank=True, null=True,
+                                related_name='choice_answer')
     body = models.TextField(verbose_name='محتوا پاسخ', blank=True, null=True)
     score = models.IntegerField(verbose_name='امتیاز', blank=True, null=True)
 

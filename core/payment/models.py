@@ -11,13 +11,13 @@ from conf.time import time_now
 # Create your models here.
 class Transaction(BaseModel):
     user = models.ForeignKey('account.ChoiceUser', on_delete=models.CASCADE,
-                                 verbose_name='کاربر')
+                             verbose_name='کاربر', related_name='transactions')
+    test_payment = models.ForeignKey('exam.TestPayment', on_delete=models.CASCADE,
+                                     verbose_name='پرداخت تست', blank=True, null=True, related_name='test_transactions')
     off_code = models.ForeignKey('payment.OffCode', on_delete=models.CASCADE,
-                                 verbose_name='کد تخفیف', null=True, blank=True)
+                                 verbose_name='کد تخفیف', null=True, blank=True, related_name='transaction')
     is_payed = models.BooleanField(verbose_name='پرداخت شده', default=False)
     tracking_code = models.CharField(max_length=50, verbose_name='کد پیگیری')
-    test_payment = models.ForeignKey('exam.TestPayment', on_delete=models.CASCADE,
-                                     verbose_name='پرداخت تست', blank=True, null=True)
     description = models.TextField(verbose_name='توضیحات', null=True, blank=True)
 
     class Meta:
@@ -30,10 +30,11 @@ class Transaction(BaseModel):
 
 
 class OffCode(BaseModel):
-    code = models.CharField(max_length=50, verbose_name='کد')
     user = models.ForeignKey('account.ChoiceUser', on_delete=models.CASCADE,
-                                 verbose_name='کاربر')
-    test = models.ForeignKey('exam.Test', verbose_name='تست', on_delete=models.CASCADE, blank=True, null=True)
+                             verbose_name='کاربر', related_name='off_codes')
+    test = models.ForeignKey('exam.Test', verbose_name='تست', on_delete=models.CASCADE, blank=True, null=True,
+                             related_name='off_codes')
+    code = models.CharField(max_length=50, verbose_name='کد')
     limit = models.IntegerField(verbose_name='محدودیت', default=0)
     usage = models.IntegerField(verbose_name='استفاده شده', default=0)
     expire_date = models.BigIntegerField(verbose_name='تاریخ انقضا', blank=True, null=True)
