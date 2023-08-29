@@ -1,14 +1,16 @@
 from django.db import models
 from django.urls import reverse
 from django.conf import settings
+from django.core.validators import MaxValueValidator, MinValueValidator
 
-from conf.model import BaseModel
+
+from conf.model import BaseModel, validate_is_not_trappist, validate_is_trappist
 
 
 class Category(BaseModel):
     parent_category = models.ForeignKey('self', verbose_name="دسته بندی پدر", blank=True, null=True,
                                         on_delete=models.CASCADE, related_name='parents_category')
-    name = models.CharField(max_length=100, verbose_name='نام')
+    name = models.CharField(max_length=100, verbose_name='نام', unique=True)
     image = models.ImageField(verbose_name='تصویر', upload_to='category_images', null=True, blank=True)
     description = models.TextField(verbose_name='توضیحات', blank=True, null=True)
     color = models.TextField(verbose_name='رنگ', blank=True, null=True)
@@ -24,11 +26,12 @@ class Category(BaseModel):
 
 
 class UserCategory(BaseModel):
-    user = models.ForeignKey('account.ChoiceUser', on_delete=models.CASCADE,
-                             verbose_name='کاربر', related_name='user_category')
+    user = models.ForeignKey('account.Profile', on_delete=models.CASCADE,
+                             verbose_name='کاربر', related_name='user_category', validators=[validate_is_trappist])
     category = models.ForeignKey(Category, verbose_name='دسته بندی', on_delete=models.CASCADE,
                                  related_name='user_category')
-    is_valid = models.BooleanField(verbose_name='فعال', default=False)
+    is_valid = models.BooleanField(verbose_name='معتبر', default=False)
+    is_active = models.BooleanField(verbose_name='فعال', default=False)
 
     class Meta:
         verbose_name = 'دسته بندی کاربر'
@@ -38,14 +41,18 @@ class UserCategory(BaseModel):
     def __str__(self):
         return self.title
 
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        return super().save(*args, **kwargs)
+
 
 class TrappistCategoryPrice(BaseModel):
-    trappist = models.ForeignKey('account.Trappist', on_delete=models.CASCADE,
-                                 verbose_name='درمانگر', related_name='category_price')
-    category = models.ForeignKey(Category, verbose_name='دسته بندی', on_delete=models.CASCADE,
-                                 related_name='trappist_price')
+    user_category = models.ForeignKey(UserCategory, on_delete=models.CASCADE, related_name='category_price')
+    time = models.PositiveIntegerField(verbose_name='رمان', blank=True, null=True)
+    add_time = models.PositiveIntegerField(verbose_name='رمان_اضاقه', blank=True, null=True)
     price = models.BigIntegerField(verbose_name='قیمت')
-    is_valid = models.BooleanField(verbose_name='فعال', default=False)
+    add_price = models.BigIntegerField(verbose_name='قیمت_اضاقه', blank=True, null=True)
+    is_valid = models.BooleanField(verbose_name='معتبر', default=False)
 
     class Meta:
         verbose_name = 'قیمت تخصص درمانگر'
@@ -66,7 +73,7 @@ class Post(BaseModel):
         ('closure', 'بسته')
     )
 
-    author = models.ForeignKey('account.ChoiceUser', on_delete=models.CASCADE,
+    author = models.ForeignKey('account.Profile', on_delete=models.CASCADE,
                                verbose_name='کاربر', related_name='posts')
     category = models.ForeignKey(Category, verbose_name='دسته بندی', on_delete=models.CASCADE, blank=True, null=True,
                                  related_name='posts')
@@ -113,9 +120,27 @@ class PostFile(BaseModel):
         return f'{self.post} - {self.is_main} - {self.is_valid}'
 
 
+class PostRate(BaseModel):
+    user = models.ForeignKey('account.Profile', on_delete=models.CASCADE, verbose_name='کاربر',
+                             related_name='post_retes')
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, verbose_name='پست', related_name='rates')
+    rate = models.IntegerField(verbose_name='امتیاز', validators=[MinValueValidator(0), MaxValueValidator(5)],
+                               blank=True, null=True)
+    like = models.BooleanField(verbose_name='لایک', blank=True, null=True)
+
+    class Meta:
+        unique_together = ('user', 'post',)
+        verbose_name = 'امتیاز پست'
+        verbose_name_plural = verbose_name
+        db_table = 'post_rate'
+
+    def __str__(self):
+        return f'{self.post} - {self.rate}'
+
+
 class Tag(BaseModel):
     name = models.CharField(verbose_name='نام', max_length=30, unique=True)
-    slug = models.SlugField(verbose_name='اسلاگ', default='no-slug', max_length=60, blank=True, null=True)
+    slug = models.SlugField(default='no-slug', max_length=60, blank=True, null=True)
 
     class Meta:
         verbose_name = 'تگ'
@@ -127,7 +152,7 @@ class Tag(BaseModel):
 
 
 class Comment(BaseModel):
-    user = models.ForeignKey('account.ChoiceUser', on_delete=models.CASCADE,
+    user = models.ForeignKey('account.Profile', on_delete=models.CASCADE,
                              verbose_name='کاربر', related_name='comments')
     parent_comment = models.ForeignKey('self', verbose_name="کامنت پدر", blank=True, null=True,
                                        on_delete=models.CASCADE, related_name='parents_comment')

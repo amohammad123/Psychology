@@ -1,7 +1,7 @@
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
 
-from conf.model import BaseModel
+from conf.model import BaseModel, validate_is_not_trappist, validate_is_trappist
 from rest_framework.exceptions import ValidationError
 
 
@@ -55,6 +55,7 @@ class PackageFile(BaseModel):
     def __str__(self):
         return f'{self.package} - {self.is_main} - {self.is_valid}'
 
+
 class PackagePayment(BaseModel):
     package = models.ForeignKey(Package, verbose_name='پکیج', on_delete=models.CASCADE, related_name='payment')
     original_price = models.PositiveIntegerField(verbose_name='قیمت اصلی', blank=True, null=True)
@@ -75,14 +76,16 @@ class PackagePayment(BaseModel):
 
 
 class PackageRate(BaseModel):
-    user = models.ForeignKey('account.ChoiceUser', on_delete=models.CASCADE, verbose_name='کاربر',
+    user = models.ForeignKey('account.Profile', on_delete=models.CASCADE, verbose_name='کاربر',
                              related_name='package_retes')
     package = models.ForeignKey(Package, on_delete=models.CASCADE, verbose_name='پکیج', related_name='rates')
     comment = models.TextField(verbose_name='نظر', blank=True, null=True)
     rate = models.IntegerField(verbose_name='امتیاز', validators=[MinValueValidator(0), MaxValueValidator(5)],
                                blank=True, null=True)
+    like = models.BooleanField(verbose_name='لایک', blank=True, null=True)
 
     class Meta:
+        unique_together = ('user', 'package',)
         verbose_name = 'امتیاز پکیج'
         verbose_name_plural = verbose_name
         db_table = 'package_rate'

@@ -1,7 +1,7 @@
 from django.db import models
 from django.conf import settings
 
-from conf.model import BaseModel
+from conf.model import BaseModel, validate_is_not_trappist, validate_is_trappist
 
 
 # Create your models here.
@@ -14,7 +14,8 @@ class Test(BaseModel):
                                     null=True, related_name='parents_test')
     name = models.CharField(verbose_name='نام', max_length=50)
     index = models.IntegerField(verbose_name='الویت', blank=True, null=True)
-    time = models.IntegerField(verbose_name='زمان', blank=True, null=True)
+    time = models.PositiveIntegerField(verbose_name='زمان', blank=True, null=True)
+    result_time = models.PositiveIntegerField(verbose_name='رمان دربافت نتیحه', blank=True, null=True)
     min_age = models.IntegerField(verbose_name='حداقل سن', blank=True, null=True)
     max_age = models.IntegerField(verbose_name='حداکثر سن', blank=True, null=True)
     explanation = models.TextField(verbose_name='توضیحات', blank=True, null=True)
@@ -49,7 +50,7 @@ class TestPayment(BaseModel):
 
 
 class UserTest(BaseModel):
-    user = models.ForeignKey('account.ChoiceUser', on_delete=models.CASCADE,
+    user = models.ForeignKey('account.Profile', on_delete=models.CASCADE,
                              verbose_name='کاربر', related_name='tests')
     test = models.ForeignKey(Test, verbose_name='تست', on_delete=models.CASCADE, related_name='user_test')
     score = models.IntegerField(verbose_name='امتیاز', blank=True, null=True)

@@ -1,15 +1,15 @@
 from django.db import models
 
-from conf.model import BaseModel
+from conf.model import BaseModel, validate_is_not_trappist, validate_is_trappist
 
 
 # Create your models here.
 
 class Prescription(BaseModel):
-    trappist = models.ForeignKey('account.Trappist', verbose_name='درمانگر', on_delete=models.CASCADE,
-                                 related_name='prescriptions')
-    client = models.ForeignKey('account.Client', verbose_name='مراجع', on_delete=models.CASCADE,
-                               related_name='prescriptions')
+    trappist = models.ForeignKey('account.Profile', verbose_name='درمانگر', on_delete=models.CASCADE,
+                                 related_name='trappist_prescriptions', validators=[validate_is_trappist])
+    client = models.ForeignKey('account.Profile', verbose_name='مراجع', on_delete=models.CASCADE,
+                               related_name='client_prescriptions', validators=[validate_is_not_trappist])
     name = models.CharField(verbose_name='نام', max_length=50)
     description = models.TextField(verbose_name='توضیحات', blank=True, null=True)
 
@@ -20,6 +20,10 @@ class Prescription(BaseModel):
 
     def __str__(self):
         return f'{self.name} - {self.trappist} - {self.client}'
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        return super().save(*args, **kwargs)
 
 
 class Drug(BaseModel):
