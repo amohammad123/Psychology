@@ -8,7 +8,8 @@ from conf.time import time_now
 class CustomUser(AbstractUser, BaseModel):
     gender_choices = (
         ('male', 'مرد'),
-        ('female', 'زن')
+        ('female', 'زن'),
+        ('unknown', 'نامشخص')
     )
     type_choices = (
         ('client', 'مراحع'),

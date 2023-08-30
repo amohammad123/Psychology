@@ -6,6 +6,8 @@ from conf.model import BaseModel, validate_is_not_trappist, validate_is_trappist
 # Create your models here.
 
 class Prescription(BaseModel):
+    category = models.ForeignKey('post.Category', on_delete=models.CASCADE, verbose_name='دسته بندی', blank=True,
+                                 null=True, related_name='prescriptions')
     trappist = models.ForeignKey('account.Profile', verbose_name='درمانگر', on_delete=models.CASCADE,
                                  related_name='trappist_prescriptions', validators=[validate_is_trappist])
     client = models.ForeignKey('account.Profile', verbose_name='مراجع', on_delete=models.CASCADE,

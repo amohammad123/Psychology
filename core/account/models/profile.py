@@ -1,5 +1,5 @@
 from django.db import models
-from django.core.exceptions import ValidationError
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 from conf.model import BaseModel, validate_is_not_trappist, validate_is_trappist
 from .user import CustomUser
@@ -50,15 +50,40 @@ class Profile(BaseModel):
     bank_name = models.CharField(verbose_name='نام بانک', max_length=64, null=True, blank=True)
 
     class Meta:
-        verbose_name = 'درمانگر'
-        verbose_name_plural = 'درمانگران'
-        db_table = 'trappist'
+        verbose_name = 'پروفایل'
+        verbose_name_plural = verbose_name
+        db_table = 'profile'
 
     def get_full_name(self):
         return f'{self.first_name} {self.last_name}'
 
     def __str__(self):
         return self.get_full_name()
+
+
+class TrappistRate(BaseModel):
+    trappist = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='trappist_rate',
+                                 verbose_name='درمانگر', validators=[validate_is_trappist])
+    client = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='client_rate', verbose_name='مراجع',
+                               validators=[validate_is_not_trappist])
+    rate = models.PositiveIntegerField(verbose_name='امتیاز درمانگر',
+                                       validators=[MinValueValidator(0), MaxValueValidator(5)])
+    comment = models.TextField(verbose_name='نظر', blank=True, null=True)
+    is_valid = models.BooleanField(verbose_name='معتبر', default=True)
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        return super().save(*args, **kwargs)
+
+    class Meta:
+        verbose_name = 'امتیاز درمانگر'
+        verbose_name_plural = verbose_name
+        db_table = 'trappist_rate'
+
+    def __str__(self):
+        return f'{self.trappist} - {self.client} - {self.rate}'
+
+
 
 
 # class ChoiceUser(BaseModel):
@@ -109,6 +134,7 @@ class MedicalDocument(BaseModel):
 
 
 class SpecializedDocuments(BaseModel):
+    # trappist = models.ForeignKey(Profile, on_delete=models.CASCADE, verbose_name='درمانگر')
     name = models.CharField(verbose_name='نام', max_length=50)
     description = models.TextField(verbose_name='توضیحات', blank=True, null=True)
     category = models.ForeignKey('post.UserCategory', verbose_name='دسته بندی کاربر', on_delete=models.CASCADE,
