@@ -1,7 +1,42 @@
 from django.contrib import admin
 from django.urls import path, include
+from rest_framework_simplejwt.views import (
+    TokenRefreshView,
+    TokenVerifyView,
+)
+
+from account.v1.views.user import TokenObtainCustomPairView, GetCodeApiView
+
+app_name = "accounts"
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', include('account.urls'))
+    # tests
+    path('signup', GetCodeApiView.as_view(), name='sign_up'),
+
+    # registration
+    # path("registration", RegistrationGenerics.as_view(), name="registration"),
+    # path("test-email", TestEmailApiView.as_view(), name="test email"),
+
+    # activation
+    # path(
+    #     "activation/confirm/<str:token>",
+    #     ActivationApiView.as_view(),
+    #     name="activation-confirm",
+    # ),
+
+    # resend activation
+    # path(
+    #     "activation/resend", ActivationResendApiView.as_view(), name="activation-resend"
+    # ),
+
+    # change password
+    # path("change-password", ChangePasswordApiView.as_view(), name="change-password"),
+
+    # reset password
+
+    # login jwt
+    # path("jwt/access", TokenObtainPairView.as_view(), name="jwt-access"),
+    path("jwt/access", TokenObtainCustomPairView.as_view(), name="jwt-access"),
+    path("jwt/refresh", TokenRefreshView.as_view(), name="jwt-refresh"),
+    path("jwt/verify", TokenVerifyView.as_view(), name="jwt-verify"),
 ]

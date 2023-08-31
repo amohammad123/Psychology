@@ -57,7 +57,8 @@ class UserTest(BaseModel):
     start_time = models.IntegerField(verbose_name='زمان شروع', blank=True, null=True)
     end_time = models.IntegerField(verbose_name='زمان پایان', blank=True, null=True)
     description = models.TextField(verbose_name='توضیحات', blank=True, null=True)
-    is_valid = models.BooleanField(verbose_name='معتبر', default=False)
+    is_payed = models.BooleanField(verbose_name='پرداخت شده', default=True)
+    is_valid = models.BooleanField(verbose_name='معتبر', default=True)
     is_done = models.BooleanField(verbose_name='انجام شده', default=False)
 
     class Meta:

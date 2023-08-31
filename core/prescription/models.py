@@ -28,8 +28,9 @@ class Prescription(BaseModel):
         return super().save(*args, **kwargs)
 
 
-class Drug(BaseModel):
-    prescription = models.ForeignKey(Prescription, verbose_name='نسخه', on_delete=models.CASCADE, related_name='drugs')
+class Medicine(BaseModel):
+    prescription = models.ForeignKey(Prescription, verbose_name='نسخه', on_delete=models.CASCADE,
+                                     related_name='medicines')
     name = models.CharField(verbose_name='نام', max_length=50)
     dosage = models.FloatField(verbose_name='میزان دوز مصرفی')
     count = models.IntegerField(verbose_name='تعداد')

@@ -33,7 +33,6 @@ class CustomUser(AbstractUser, BaseModel):
     def __str__(self):
         return self.username
 
-
 class PhoneCode(BaseModel):
     phone = models.CharField(verbose_name='شماره تلفن', max_length=11)
     code = models.CharField(verbose_name='کد', max_length=6, editable=False)
@@ -46,7 +45,7 @@ class PhoneCode(BaseModel):
         db_table = 'phone_code'
 
     def __str__(self):
-        return f'کد تایید آموزا\n\nکد: {self.code}'
+        return f'{self.phone} - {self.code}'
 
     def save(self, *args, **kwargs):
         if not self.code:

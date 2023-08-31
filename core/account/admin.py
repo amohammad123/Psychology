@@ -40,20 +40,19 @@ class CustomUserAdmin(admin.ModelAdmin):
     )
 
 
-class CustomClientAdmin(admin.ModelAdmin):
-    model = profile.Profile
-    list_display = ['id', 'first_name', 'last_name']
-    ordering = ("create_date",)
 
-
-class CustomTrappistAdmin(admin.ModelAdmin):
-    model = profile.Profile
-    list_display = ['id', 'first_name', 'last_name']
-    ordering = ("create_date",)
 
 
 admin.site.register(user.CustomUser, CustomUserAdmin)
 admin.site.register(user.PhoneCode)
+admin.site.register(profile.Profile)
+admin.site.register(profile.TrappistRate)
+admin.site.register(profile.MedicalDocument)
+admin.site.register(profile.SpecializedDocuments)
+admin.site.register(profile.DocumentField)
+admin.site.register(profile.Notification)
+admin.site.register(profile.NotificationFields)
+
 # admin.site.register(profile.Client, CustomClientAdmin)
 # admin.site.register(profile.Trappist, CustomTrappistAdmin)
 # admin.site.register(profile.Document)

@@ -56,6 +56,22 @@ class PackageFile(BaseModel):
         return f'{self.package} - {self.is_main} - {self.is_valid}'
 
 
+class UserPackage(BaseModel):
+    user = models.ForeignKey('account.Profile', on_delete=models.CASCADE, related_name='packages', verbose_name='کاربر')
+    package = models.ForeignKey(Package, on_delete=models.CASCADE, related_name='user_package',
+                                verbose_name='پکیج')
+    is_payed = models.BooleanField(default=True, verbose_name='پرداخت شده')
+    is_active = models.BooleanField(default=True, verbose_name='فعال')
+
+    class Meta:
+        verbose_name = 'پکیج های کاربر'
+        verbose_name_plural = verbose_name
+        db_table = 'user_package'
+
+    def __str__(self):
+        return f'{self.user} - {self.package} - {self.is_active}'
+
+
 class PackagePayment(BaseModel):
     package = models.ForeignKey(Package, verbose_name='پکیج', on_delete=models.CASCADE, related_name='payment')
     original_price = models.PositiveIntegerField(verbose_name='قیمت اصلی', blank=True, null=True)
