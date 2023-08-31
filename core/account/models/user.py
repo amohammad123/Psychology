@@ -40,7 +40,8 @@ class PhoneCodeManage(models.Manager):
         phone_code = self.filter(phone=phone)
         if phone_code.exists():
             if phone_code.last().expire_date > time_now() and phone_code.last().is_active == True:
-                raise ValidationError({'message': 'کد قبلا ارسال شده'})
+                raise ValidationError(
+                    {'message': 'کد قبلا ارسال شده', 'time_to_expire': phone_code.last().expire_date - time_now()})
             phone_code.filter(is_active=True, expire_date__lt=time_now()).update(is_active=False)
         code = self.create(phone=phone)
         return code
@@ -71,4 +72,4 @@ class PhoneCode(BaseModel):
 
     def code_generator(self):
         import random
-        return str(random.randint(100000, 999999))
+        return str(random.randint(10000, 99999))
