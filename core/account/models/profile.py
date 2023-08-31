@@ -84,8 +84,6 @@ class TrappistRate(BaseModel):
         return f'{self.trappist} - {self.client} - {self.rate}'
 
 
-
-
 # class ChoiceUser(BaseModel):
 #     user_choices = (
 #         ('client', 'مراجع'),
@@ -225,3 +223,21 @@ class NotificationFields(BaseModel):
 
     def __str__(self):
         return f'{self.notification}'
+
+
+class Favourite(BaseModel):
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='favourites', verbose_name='کاربر')
+    test = models.ForeignKey('exam.Test', on_delete=models.CASCADE, related_name='user_favourites', verbose_name='تست',
+                             blank=True, null=True)
+    package = models.ForeignKey('package.Package', on_delete=models.CASCADE, related_name='user_favourites',
+                                verbose_name='پکیج', blank=True, null=True)
+    post = models.ForeignKey('post.Post', on_delete=models.CASCADE, related_name='user_favourites', verbose_name='پست',
+                             blank=True, null=True)
+
+    class Meta:
+        verbose_name = 'پسندیده ها'
+        verbose_name_plural = verbose_name
+        db_table = 'favourite'
+
+    def __str__(self):
+        return self.profile

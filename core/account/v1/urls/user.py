@@ -5,15 +5,16 @@ from rest_framework_simplejwt.views import (
     TokenVerifyView,
 )
 
-from account.v1.views.user import TokenObtainCustomPairView, GetCodeApiView
+from account.v1.views.user import TokenObtainCustomPairView, GetCodeApiView, CreateUserApiView
 
 app_name = "accounts"
 
 urlpatterns = [
     # tests
-    path('signup', GetCodeApiView.as_view(), name='sign_up'),
+    path('code-submit', GetCodeApiView.as_view(), name='code-submit'),
 
     # registration
+    path('signup', CreateUserApiView.as_view(), name='signup'),
     # path("registration", RegistrationGenerics.as_view(), name="registration"),
     # path("test-email", TestEmailApiView.as_view(), name="test email"),
 

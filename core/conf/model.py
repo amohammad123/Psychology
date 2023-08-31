@@ -1,5 +1,6 @@
 from django.db import models
 from django.core.exceptions import ValidationError
+from rest_framework import serializers
 
 import uuid
 from .time import time_now
@@ -27,3 +28,19 @@ def validate_is_not_trappist(profile):
 def validate_is_trappist(profile):
     if not profile.is_trappist:
         raise ValidationError('profile must be trappist')
+
+
+class MyModelSerializer(serializers.ModelSerializer):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        try:
+            for field in self.fields.values():
+                if field.required:
+                    field.error_messages['required'] = f'وارد کردن فیلد {field.label} الزامی است'
+                field.error_messages['null'] = f'وارد کردن فیلد {field.label} الزامی است'
+                field.error_messages['blank'] = f'وارد کردن فیلد {field.label} الزامی است'
+                field.error_messages['invalid'] = f'فرمت فیلد {field.label} صحیح نیست'
+                field.error_messages['does_not_exist'] = f' {field.label} وارد شده معتبر نیست'
+        except:
+            ...
