@@ -25,8 +25,9 @@ class GetCodeSerializer(MyModelSerializer):
         phone = attrs.get('phone', None)
         if phone is None:
             raise serializers.ValidationError({'message': 'وارد کردن شماره همراه الزامی است'})
-        if len(phone) != 11:
-            raise serializers.ValidationError({'message': 'شماره وارد شده صحیح نمی باشد'})
+        # must be uncomment later
+        # if len(phone) != 11:
+        #     raise serializers.ValidationError({'message': 'شماره وارد شده صحیح نمی باشد'})
         return super().validate(attrs)
 
     def create(self, validated_data):

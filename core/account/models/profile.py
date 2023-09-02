@@ -57,7 +57,7 @@ class Profile(BaseModel):
     bank_name = models.CharField(verbose_name='نام بانک', max_length=64, null=True, blank=True)
     date_of_birth = models.BigIntegerField(verbose_name='تاریخ تولد', blank=True, null=True)
     gender = models.CharField(verbose_name='جنسیت', max_length=10, choices=gender_choices, blank=True, null=True)
-    city = models.CharField(verbose_name='شهر فعالیت', max_length=25, blank=True, null=True)
+    city = models.CharField(verbose_name='شهر', max_length=25, blank=True, null=True)
     address = models.TextField(verbose_name='آدرس', blank=True, null=True)
 
     class Meta:
