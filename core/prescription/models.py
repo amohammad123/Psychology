@@ -1,6 +1,7 @@
 from django.db import models
 
-from conf.model import BaseModel, validate_is_not_trappist, validate_is_trappist
+from conf.model import BaseModel
+from account.models.profile import validate_is_not_trappist, validate_is_trappist
 
 
 # Create your models here.

@@ -7,11 +7,7 @@ from rest_framework.exceptions import ValidationError
 
 
 class CustomUser(AbstractUser, BaseModel):
-    gender_choices = (
-        ('male', 'مرد'),
-        ('female', 'زن'),
-        ('unknown', 'نامشخص')
-    )
+
     type_choices = (
         ('client', 'مراحع'),
         ('trappist', 'درمانگر')
@@ -20,8 +16,6 @@ class CustomUser(AbstractUser, BaseModel):
     is_verified = models.BooleanField(verbose_name='فعال', default=False)
     nationality_code = models.IntegerField(verbose_name='کد ملی', blank=True, null=True)
     type = models.CharField(verbose_name='نوع کاربر', max_length=20, choices=type_choices, blank=True, null=True)
-    date_of_birth = models.BigIntegerField(verbose_name='تاریخ تولد', blank=True, null=True)
-    gender = models.CharField(verbose_name='جنسیت', max_length=10, choices=gender_choices, blank=True, null=True)
     user_code = models.CharField(verbose_name='کد معرفی', max_length=20, null=True, blank=True)
     invitor_code = models.CharField(verbose_name='کد معرف', max_length=20, null=True, blank=True, editable=False)
     REQUIRED_FIELDS = []

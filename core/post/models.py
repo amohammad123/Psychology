@@ -3,8 +3,10 @@ from django.urls import reverse
 from django.conf import settings
 from django.core.validators import MaxValueValidator, MinValueValidator
 
+from account.models.profile import validate_is_not_trappist, validate_is_trappist
 
-from conf.model import BaseModel, validate_is_not_trappist, validate_is_trappist
+
+from conf.model import BaseModel
 
 
 class Category(BaseModel):

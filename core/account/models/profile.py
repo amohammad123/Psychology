@@ -1,7 +1,8 @@
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
+from django.core.exceptions import ValidationError
 
-from conf.model import BaseModel, validate_is_not_trappist, validate_is_trappist
+from conf.model import BaseModel
 from .user import CustomUser
 
 
@@ -34,13 +35,19 @@ class Profile(BaseModel):
         ('master', 'کارشناسی ارشد'),
         ('doctor', 'دکترا')
     )
+    gender_choices = (
+        ('male', 'مرد'),
+        ('female', 'زن'),
+        ('unknown', 'نامشخص')
+    )
     user = models.OneToOneField(verbose_name='کاربر', to=CustomUser, on_delete=models.CASCADE, related_name='profile',
                                 null=True)
     is_trappist = models.BooleanField(verbose_name='درمانگر', default=False)
     first_name = models.CharField(verbose_name='نام', max_length=40)
     last_name = models.CharField(verbose_name='نام خانوادگی', max_length=40)
-    specialized_field = models.CharField(verbose_name='رشته تخصصی', max_length=50, blank=True, null=True)
-    system_code = models.IntegerField(verbose_name='کد نظام', blank=True, null=True)
+    specialized_field = models.CharField(verbose_name='رشته تحصیلی', max_length=50, blank=True, null=True)
+    member_number = models.PositiveIntegerField(verbose_name='کد نظام', blank=True, null=True)
+    license_umber = models.PositiveIntegerField(verbose_name='شماره پروانه اشتغال', blank=True, null=True)
     level = models.CharField(verbose_name='سطخ تحصیلات', max_length=20, choices=level_choices, blank=True, null=True)
     image = models.ImageField(verbose_name='تصویر', upload_to='profile_images', null=True, blank=True)
     file = models.FileField(verbose_name='فایل', upload_to='profile_files', null=True, blank=True)
@@ -48,6 +55,10 @@ class Profile(BaseModel):
     sheba = models.CharField(verbose_name='شماره شبا', max_length=24, null=True, blank=True)
     card_number = models.CharField(verbose_name='شماره کارت', max_length=16, null=True, blank=True)
     bank_name = models.CharField(verbose_name='نام بانک', max_length=64, null=True, blank=True)
+    date_of_birth = models.BigIntegerField(verbose_name='تاریخ تولد', blank=True, null=True)
+    gender = models.CharField(verbose_name='جنسیت', max_length=10, choices=gender_choices, blank=True, null=True)
+    city = models.CharField(verbose_name='شهر فعالیت', max_length=25, blank=True, null=True)
+    address = models.TextField(verbose_name='آدرس', blank=True, null=True)
 
     class Meta:
         verbose_name = 'پروفایل'
@@ -59,6 +70,18 @@ class Profile(BaseModel):
 
     def __str__(self):
         return self.get_full_name()
+
+
+def validate_is_not_trappist(profile):
+    get_obj = Profile.objects.get(id=profile).is_trappist
+    if get_obj:
+        raise ValidationError('user must be a client')
+
+
+def validate_is_trappist(profile):
+    get_obj = Profile.objects.get(id=profile).is_trappist
+    if not get_obj:
+        raise ValidationError('user must be a trappist')
 
 
 class TrappistRate(BaseModel):
@@ -201,6 +224,7 @@ class NotificationFields(BaseModel):
         ('package', 'پکیج'),
         ('counseling', 'مشاوره'),
     )
+
     notification = models.ForeignKey(Notification, verbose_name='اعلان', on_delete=models.CASCADE,
                                      related_name='fields')
     test = models.ForeignKey('exam.Test', on_delete=models.CASCADE, verbose_name='تست', related_name='notifications',

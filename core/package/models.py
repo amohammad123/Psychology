@@ -1,7 +1,8 @@
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
 
-from conf.model import BaseModel, validate_is_not_trappist, validate_is_trappist
+from account.models.profile import validate_is_not_trappist, validate_is_trappist
+from conf.model import BaseModel
 from rest_framework.exceptions import ValidationError
 
 

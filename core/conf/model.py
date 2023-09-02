@@ -1,5 +1,4 @@
 from django.db import models
-from django.core.exceptions import ValidationError
 from rest_framework import serializers
 
 import uuid
@@ -20,14 +19,7 @@ class BaseModel(models.Model):
         return super(BaseModel, self).save(*args, **kwargs)
 
 
-def validate_is_not_trappist(profile):
-    if profile.is_trappist:
-        raise ValidationError('profile must be client')
 
-
-def validate_is_trappist(profile):
-    if not profile.is_trappist:
-        raise ValidationError('profile must be trappist')
 
 
 class MyModelSerializer(serializers.ModelSerializer):

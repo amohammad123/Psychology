@@ -22,8 +22,11 @@ class GetCodeSerializer(MyModelSerializer):
         fields = ['phone']
 
     def validate(self, attrs):
-        if attrs.get('phone', None) is None:
+        phone = attrs.get('phone', None)
+        if phone is None:
             raise serializers.ValidationError({'message': 'وارد کردن شماره همراه الزامی است'})
+        if len(phone) != 11:
+            raise serializers.ValidationError({'message': 'شماره وارد شده صحیح نمی باشد'})
         return super().validate(attrs)
 
     def create(self, validated_data):
@@ -92,7 +95,7 @@ class CodeVerificationSerializer(serializers.Serializer):
             user_code.save()
             raise serializers.ValidationError({'message': 'اعتبار کد تمام شده است'})
         if code != user_code.code:
-            raise serializers.ValidationError({'message': 'کد وارد شده صحیح نیست'})
+            raise serializers.ValidationError({'message': 'کد وارد شده صحیح نمی باشد'})
 
         return super().validate(attrs)
 

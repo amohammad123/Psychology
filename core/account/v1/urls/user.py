@@ -11,9 +11,9 @@ app_name = "accounts"
 
 urlpatterns = [
     # get_code
-    path('code/send', GetCodeApiView.as_view(), name='code-submit'),
+    path('code/send', GetCodeApiView.as_view(), name='code-submit'),  # phase 1/sign up 9
     # code verification
-    path('code/verification', CodeVerificationApiView.as_view(), name='code-login'),
+    path('code/verification', CodeVerificationApiView.as_view(), name='code-login'),  # phase 1/sign up 10
 
     # sign up
     # path('signup', SignUpApiView.as_view(), name='signup'),
