@@ -1,7 +1,9 @@
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from rest_framework import serializers
+from rest_framework import serializers, status
 from conf.model import MyModelSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
+from django.contrib.auth import password_validation
+from django.core import exceptions
 
 from account.models.user import CustomUser, PhoneCode
 from conf.time import time_now
@@ -80,9 +82,6 @@ class CodeVerificationSerializer(serializers.Serializer):
     username = serializers.CharField(max_length=14)
     code = serializers.CharField(max_length=15)
 
-    class Meta:
-        fields = ['username', 'code']
-
     def validate(self, attrs):
         username = attrs.get('username', None)
         code = attrs.pop('code', None)
@@ -107,4 +106,73 @@ class CodeVerificationSerializer(serializers.Serializer):
         refresh = RefreshToken.for_user(user)
         instance['access'] = str(refresh.access_token)
         instance['refresh'] = str(refresh)
+        return instance
+
+
+class SetPasswordSerializer(serializers.Serializer):
+    username = serializers.CharField(max_length=11)
+    password = serializers.CharField(max_length=200)
+    password1 = serializers.CharField(max_length=200)
+
+    def validate(self, attrs):
+        if attrs.get('password') != attrs.get('password1'):
+            raise serializers.ValidationError({'message': 'رمز عبور وارد شده مطابقت ندارد'})
+        try:
+            # password_validation.validate_password(attrs.get("password"))  # todo: uncomment
+            CustomUser.objects.get(username=attrs.get('username'))
+        except exceptions.ValidationError as e:
+            raise serializers.ValidationError({'password': list(e.messages)})
+        except CustomUser.DoesNotExist:
+            raise serializers.ValidationError({'message': 'کاربر با این مشخصات یافت نشد'})
+        return super().validate(attrs)
+
+    def create(self, validated_data):
+        validated_data.pop("password1", None)
+        username = validated_data.pop('username', None)
+        return CustomUser.objects.get(username=username).update(**validated_data)
+
+    def to_representation(self, instance):
+        user = instance.get('username')
+        instance.pop('password')
+        instance.pop('password1')
+        instance['user_id'] = CustomUser.objects.get(username=user).id
+        return instance
+
+
+class ChangePasswordSerializer(serializers.Serializer):
+    old_password = serializers.CharField(max_length=200)
+    new_password = serializers.CharField(max_length=200)
+    new_password1 = serializers.CharField(max_length=200)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        try:
+            self.user = self.context.get('request').user
+            if not self.user.is_authenticated:
+                raise serializers.ValidationError({'message': 'کاربر وارد نشده است'})
+            self.get_user = CustomUser.objects.get(id=self.user.id)
+        except CustomUser.DoesNotExist:
+            raise serializers.ValidationError({'message': 'کاربر با این مشخصات یافت نشد'})
+
+    def validate(self, attrs):
+        try:
+            if attrs.get('new_password') != attrs.get('new_password1'):
+                raise serializers.ValidationError({'message': 'رمز عبور وارد شده مطابقت ندارد'})
+            if not self.get_user.check_password(attrs.get('old_password')):
+                raise serializers.ValidationError({"message": "رمز عبور فعلی نادرست است"})
+            # password_validation.validate_password(attrs.get("new_password"))  # todo: uncomment
+        except exceptions.ValidationError as e:
+            raise serializers.ValidationError({'password': list(e.messages)})
+        return super().validate(attrs)
+
+    def create(self, validated_data):
+        self.get_user.set_password(validated_data.get('new_password'))
+        self.get_user.save()
+        validated_data['user_id'] = self.get_user.id
+        return validated_data
+
+    def to_representation(self, instance):
+        instance.pop('old_password')
+        instance.pop('new_password')
+        instance.pop('new_password1')
         return instance
