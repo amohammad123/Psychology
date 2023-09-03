@@ -7,17 +7,14 @@ from rest_framework.exceptions import ValidationError
 
 
 class CustomUser(AbstractUser, BaseModel):
-
     type_choices = (
         ('client', 'مراحع'),
         ('trappist', 'درمانگر')
     )
     username = models.CharField(verbose_name='تلفن همراه', max_length=11, unique=True)
     is_verified = models.BooleanField(verbose_name='فعال', default=False)
-    nationality_code = models.IntegerField(verbose_name='کد ملی', blank=True, null=True)
-    type = models.CharField(verbose_name='نوع کاربر', max_length=20, choices=type_choices, blank=True, null=True)
-    user_code = models.CharField(verbose_name='کد معرفی', max_length=20, null=True, blank=True)
-    invitor_code = models.CharField(verbose_name='کد معرف', max_length=20, null=True, blank=True, editable=False)
+    type = models.CharField(verbose_name='نوع کاربر', max_length=20, choices=type_choices, blank=True, null=True,
+                            default='client')
     REQUIRED_FIELDS = []
 
     class Meta:

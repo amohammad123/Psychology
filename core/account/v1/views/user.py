@@ -1,12 +1,10 @@
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenViewBase
-from rest_framework import generics, status, views
-from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework import mixins
+from rest_framework import generics, status, views, mixins
 from rest_framework import permissions
 
-from account.v1.serilizers.user import (TokenObtainCustomPairSerializer, GetCodeSerializer, CodeVerificationSerializer,
+from account.v1.serializers.user import (TokenObtainCustomPairSerializer, GetCodeSerializer, CodeVerificationSerializer,
                                         SetPasswordSerializer, ChangePasswordSerializer)
 from account.models.user import CustomUser, PhoneCode
 from conf.time import time_now

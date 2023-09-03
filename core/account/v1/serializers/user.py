@@ -1,5 +1,5 @@
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from rest_framework import serializers, status
+from rest_framework import serializers
 from conf.model import MyModelSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import password_validation

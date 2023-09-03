@@ -1,6 +1,7 @@
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.core.exceptions import ValidationError
+import re
 
 from conf.model import BaseModel
 from .user import CustomUser
@@ -29,6 +30,11 @@ from .user import CustomUser
 #         return self.get_full_name()
 
 
+def validate_iranian_national_code(value):
+    if not re.match(r'^\d{10}$', value):
+        raise ValidationError('کد ملی وارد شده اشتباه است')
+
+
 class Profile(BaseModel):
     level_choices = (
         ('bachelors', 'کارشناسی'),
@@ -47,7 +53,7 @@ class Profile(BaseModel):
     last_name = models.CharField(verbose_name='نام خانوادگی', max_length=40)
     specialized_field = models.CharField(verbose_name='رشته تحصیلی', max_length=50, blank=True, null=True)
     member_number = models.PositiveIntegerField(verbose_name='کد نظام', blank=True, null=True)
-    license_umber = models.PositiveIntegerField(verbose_name='شماره پروانه اشتغال', blank=True, null=True)
+    license_number = models.PositiveIntegerField(verbose_name='شماره پروانه اشتغال', blank=True, null=True)
     level = models.CharField(verbose_name='سطخ تحصیلات', max_length=20, choices=level_choices, blank=True, null=True)
     image = models.ImageField(verbose_name='تصویر', upload_to='profile_images', null=True, blank=True)
     file = models.FileField(verbose_name='فایل', upload_to='profile_files', null=True, blank=True)
@@ -56,9 +62,13 @@ class Profile(BaseModel):
     card_number = models.CharField(verbose_name='شماره کارت', max_length=16, null=True, blank=True)
     bank_name = models.CharField(verbose_name='نام بانک', max_length=64, null=True, blank=True)
     date_of_birth = models.BigIntegerField(verbose_name='تاریخ تولد', blank=True, null=True)
+    nationality_code = models.CharField(max_length=10, verbose_name='کد ملی', blank=True, null=True,
+                                        validators=[validate_iranian_national_code])
     gender = models.CharField(verbose_name='جنسیت', max_length=10, choices=gender_choices, blank=True, null=True)
     city = models.CharField(verbose_name='شهر', max_length=25, blank=True, null=True)
     address = models.TextField(verbose_name='آدرس', blank=True, null=True)
+    user_code = models.CharField(verbose_name='کد معرفی', max_length=20, null=True, blank=True)
+    invitor_code = models.CharField(verbose_name='کد معرف', max_length=20, null=True, blank=True, editable=False)
 
     class Meta:
         verbose_name = 'پروفایل'
