@@ -49,11 +49,12 @@ class Profile(BaseModel):
     user = models.OneToOneField(verbose_name='کاربر', to=CustomUser, on_delete=models.CASCADE, related_name='profile',
                                 null=True)
     is_trappist = models.BooleanField(verbose_name='درمانگر', default=False)
+    is_valid = models.BooleanField(verbose_name='معتبر', default=True)
     first_name = models.CharField(verbose_name='نام', max_length=40)
     last_name = models.CharField(verbose_name='نام خانوادگی', max_length=40)
     specialized_field = models.CharField(verbose_name='رشته تحصیلی', max_length=50, blank=True, null=True)
-    member_number = models.PositiveIntegerField(verbose_name='کد نظام', blank=True, null=True)
-    license_number = models.PositiveIntegerField(verbose_name='شماره پروانه اشتغال', blank=True, null=True)
+    member_number = models.CharField(max_length=10, verbose_name='کد نظام', blank=True, null=True)
+    license_number = models.CharField(max_length=10, verbose_name='شماره پروانه اشتغال', blank=True, null=True)
     level = models.CharField(verbose_name='سطخ تحصیلات', max_length=20, choices=level_choices, blank=True, null=True)
     image = models.ImageField(verbose_name='تصویر', upload_to='profile_images', null=True, blank=True)
     file = models.FileField(verbose_name='فایل', upload_to='profile_files', null=True, blank=True)
@@ -71,6 +72,9 @@ class Profile(BaseModel):
     invitor_code = models.CharField(verbose_name='کد معرف', max_length=20, null=True, blank=True, editable=False)
 
     class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['user'], name='unique_user', violation_error_message='کاربر با این مشخصات قبلا ثبت شده است'),
+        ]
         verbose_name = 'پروفایل'
         verbose_name_plural = verbose_name
         db_table = 'profile'
@@ -80,6 +84,7 @@ class Profile(BaseModel):
 
     def __str__(self):
         return self.get_full_name()
+
 
 
 def validate_is_not_trappist(profile):

@@ -1,5 +1,5 @@
 # general modules
-django>=3.2,<3.3
+django
 python-decouple
 pillow
 djangorestframework

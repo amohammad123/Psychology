@@ -129,7 +129,7 @@ class SetPasswordSerializer(serializers.Serializer):
     def create(self, validated_data):
         validated_data.pop("password1", None)
         username = validated_data.pop('username', None)
-        return CustomUser.objects.get(username=username).update(**validated_data)
+        return CustomUser.objects.get(username=username).update(is_verified=True, **validated_data)
 
     def to_representation(self, instance):
         user = instance.get('username')
