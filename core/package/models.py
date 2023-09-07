@@ -9,7 +9,8 @@ from rest_framework.exceptions import ValidationError
 # Create your models here.
 
 class Package(BaseModel):
-    category = models.ManyToManyField('post.UserCategory', verbose_name='دسته بندی کاربر',
+    user = models.ForeignKey('account.Profile', on_delete=models.CASCADE, related_name='packages', verbose_name='کاربر')
+    category = models.ManyToManyField('post.Category', verbose_name='دسته بندی',
                                       related_name='packages')
     parent_package = models.ForeignKey('self', on_delete=models.CASCADE, verbose_name='پکیج پدر', blank=True, null=True,
                                        related_name='parents_package')
@@ -57,20 +58,20 @@ class PackageFile(BaseModel):
         return f'{self.package} - {self.is_main} - {self.is_valid}'
 
 
-class UserPackage(BaseModel):
-    user = models.ForeignKey('account.Profile', on_delete=models.CASCADE, related_name='packages', verbose_name='کاربر')
-    package = models.ForeignKey(Package, on_delete=models.CASCADE, related_name='user_package',
-                                verbose_name='پکیج')
-    is_payed = models.BooleanField(default=True, verbose_name='پرداخت شده')
-    is_active = models.BooleanField(default=True, verbose_name='فعال')
-
-    class Meta:
-        verbose_name = 'پکیج های کاربر'
-        verbose_name_plural = verbose_name
-        db_table = 'user_package'
-
-    def __str__(self):
-        return f'{self.user} - {self.package} - {self.is_active}'
+# class UserPackage(BaseModel):
+#     user = models.ForeignKey('account.Profile', on_delete=models.CASCADE, related_name='packages', verbose_name='کاربر')
+#     package = models.ForeignKey(Package, on_delete=models.CASCADE, related_name='user_package',
+#                                 verbose_name='پکیج')
+#     is_payed = models.BooleanField(default=True, verbose_name='پرداخت شده')
+#     is_active = models.BooleanField(default=True, verbose_name='فعال')
+#
+#     class Meta:
+#         verbose_name = 'پکیج های کاربر'
+#         verbose_name_plural = verbose_name
+#         db_table = 'user_package'
+#
+#     def __str__(self):
+#         return f'{self.user} - {self.package} - {self.is_active}'
 
 
 class PackagePayment(BaseModel):

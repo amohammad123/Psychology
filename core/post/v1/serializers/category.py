@@ -2,7 +2,8 @@ from rest_framework import serializers
 from conf.model import MyModelSerializer
 from django.core import exceptions
 
-from post.models import (Category)
+from post.models import (Category, Post)
+from package.models import Package
 
 
 # todo: complete this serializer for create category by admin
@@ -25,6 +26,12 @@ from post.models import (Category)
 #             Category.objects.create(**parent)
 #
 #         return validated_data
+
+class BaseCategorySerializer(MyModelSerializer):
+    class Meta:
+        model = Category
+        exclude = ['is_deleted', 'update_date', 'create_date']
+
 
 class ListCategorySerializer(MyModelSerializer):
     class Meta:
@@ -70,4 +77,29 @@ class SubDetailCategorySerializer(MyModelSerializer):
                                                           many=True).data
         if len(rep['sub_category']) == 0:
             rep.pop('sub_category')
+        return rep
+
+
+class CategoryDetailSerializer(MyModelSerializer):
+    """
+    this serializer get the detail of each category
+    """
+
+    class Meta:
+        model = Category
+        exclude = ['is_deleted', 'update_date', 'create_date']
+
+    def to_representation(self, instance):
+        rep = super().to_representation(instance)
+        try:
+            category_id = rep['id']
+            category = Category.objects.get(id=category_id)
+            rep['sub_category'] = BaseCategorySerializer(Category.objects.filter(parent_category=category_id),
+                                                         many=True).data
+            rep['posts_count'] = category.posts.all().count()
+            rep['tests_count'] = category.tests.all().count()
+            rep['packages_count'] = category.packages.all().count()
+            rep['categories_count'] = category.parents_category.all().count()
+        except Category.DoesNotExist:
+            raise serializers.ValidationError({'message': 'دسته بندی مورد نظر یافت نشد'})
         return rep

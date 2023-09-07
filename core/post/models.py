@@ -45,7 +45,7 @@ class UserCategory(BaseModel):
         db_table = 'user_category'
 
     def __str__(self):
-        return self.title
+        return f'{self.user.last_name}'
 
     def save(self, *args, **kwargs):
         self.full_clean()

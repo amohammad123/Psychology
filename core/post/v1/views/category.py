@@ -5,7 +5,8 @@ from rest_framework import permissions
 
 from conf.time import time_now
 from account.permissions import ClientPermission
-from post.v1.serializers.category import (ListCategorySerializer, DetailCategorySerializer, SubDetailCategorySerializer)
+from post.v1.serializers.category import (ListCategorySerializer, DetailCategorySerializer, SubDetailCategorySerializer,
+                                          CategoryDetailSerializer)
 from post.models import Category
 
 
@@ -38,3 +39,17 @@ class SubDetailCategoryApiView(generics.ListAPIView):
     # permission_classes = [permissions.IsAuthenticated] # todo: uncomment
     serializer_class = SubDetailCategorySerializer
     queryset = Category.objects.all().filter(parent_category__isnull=True, is_deleted=False)
+
+
+class CategoryDetailApiView(generics.RetrieveAPIView):
+    """
+    this view get the detail of each category
+    """
+    # permission_classes = [permissions.IsAuthenticated] # todo: uncomment
+    serializer_class = CategoryDetailSerializer
+    lookup_url_kwarg = 'category_id'
+    queryset = Category.objects.all().filter(is_deleted=False)
+
+    def get_serializer(self, *args, **kwargs):
+        kwargs['context'] = self.context = {'request': self.request}
+        return super().get_serializer(*args, **kwargs)
