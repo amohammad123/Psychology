@@ -1,0 +1,73 @@
+from rest_framework import serializers
+from conf.model import MyModelSerializer
+from django.core import exceptions
+
+from post.models import (Category)
+
+
+# todo: complete this serializer for create category by admin
+
+# class CreateCategorySerializer(MyModelSerializer):
+#     class Meta:
+#         model = Category
+#         fields = '__all__'
+#         read_only_fields = ['is_deleted', 'update_date']
+#
+#     def validate(self, attrs):
+#         parent_category = attrs.get('parent_category')
+#         parent_index = Category.objects.get(id=parent_category).indext
+#         if attrs.get('index') <= parent_index:
+#             raise serializers.ValidationError({'message': 'دسته بندی پدر انتخاب شده اشتباه است'})
+#         return attrs
+#
+#     def create(self, validated_data):
+#         for parent in validated_data:
+#             Category.objects.create(**parent)
+#
+#         return validated_data
+
+class ListCategorySerializer(MyModelSerializer):
+    class Meta:
+        model = Category
+        exclude = ['is_deleted', 'update_date', 'create_date']
+
+    def to_representation(self, instance):
+        rep = super().to_representation(instance)
+        rep.pop('parent_category', None)
+        return rep
+
+
+class DetailCategorySerializer(MyModelSerializer):
+    """
+    this serializer get the sub categories by index 1
+    """
+
+    class Meta:
+        model = Category
+        exclude = ['is_deleted', 'update_date', 'create_date']
+
+    def to_representation(self, instance):
+        rep = super().to_representation(instance)
+        rep['sub_category'] = DetailCategorySerializer(Category.objects.filter(index=1, parent_category=str(rep['id'])),
+                                                       many=True).data
+        if len(rep['sub_category']) == 0:
+            rep.pop('sub_category')
+        return rep
+
+
+class SubDetailCategorySerializer(MyModelSerializer):
+    """
+    this serializer get the whole sub categories
+    """
+
+    class Meta:
+        model = Category
+        exclude = ['is_deleted', 'update_date', 'create_date']
+
+    def to_representation(self, instance):
+        rep = super().to_representation(instance)
+        rep['sub_category'] = SubDetailCategorySerializer(Category.objects.filter(parent_category=str(rep['id'])),
+                                                          many=True).data
+        if len(rep['sub_category']) == 0:
+            rep.pop('sub_category')
+        return rep

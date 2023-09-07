@@ -41,10 +41,10 @@ schema_view = get_schema_view(
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('account.urls')),
+    path('', include('post.urls')),
     # path('test/', include('exam.urls')),
     # path('package/', include('package.urls')),
     # path('payment/', include('payment.urls')),
-    # path('blog/', include('post.urls')),
     # path('prescription/', include('prescription.urls')),
 
     # swagger

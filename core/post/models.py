@@ -5,7 +5,6 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 
 from account.models.profile import validate_is_not_trappist, validate_is_trappist
 
-
 from conf.model import BaseModel
 
 
@@ -25,6 +24,11 @@ class Category(BaseModel):
 
     def __str__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        if self.parent_category is not None:
+            self.index = self.parent_category.index + 1
+        super(Category, self).save(*args, **kwargs)
 
 
 class UserCategory(BaseModel):
