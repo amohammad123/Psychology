@@ -4,6 +4,7 @@ from django.core import exceptions
 
 from post.models import (Category, Post)
 from package.models import Package
+from conf.functions import get_sub_ids
 
 
 # todo: complete this serializer for create category by admin
@@ -87,7 +88,7 @@ class CategoryDetailSerializer(MyModelSerializer):
 
     class Meta:
         model = Category
-        exclude = ['is_deleted', 'update_date', 'create_date']
+        exclude = ['is_deleted', 'update_date', 'create_date', 'published_date', 'comment_status']
 
     def to_representation(self, instance):
         rep = super().to_representation(instance)
@@ -96,7 +97,10 @@ class CategoryDetailSerializer(MyModelSerializer):
             category = Category.objects.get(id=category_id)
             rep['sub_category'] = BaseCategorySerializer(Category.objects.filter(parent_category=category_id),
                                                          many=True).data
-            rep['posts_count'] = category.posts.all().count()
+            # rep['posts_count'] = category.posts.all().count()
+            rep['posts_count'] = Post.objects.filter(
+                category__in=get_sub_ids(obj_id=category_id, obj=category, parent_field='parents_category'),
+                is_deleted=False, status='published').count()
             rep['tests_count'] = category.tests.all().count()
             rep['packages_count'] = category.packages.all().count()
             rep['categories_count'] = category.parents_category.all().count()
