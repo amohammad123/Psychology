@@ -165,11 +165,17 @@ class Comment(BaseModel):
     post = models.ForeignKey(Post, verbose_name='پست', on_delete=models.CASCADE, related_name='comments')
     body = models.TextField(verbose_name='محتوا', max_length=300)
     is_enable = models.BooleanField(verbose_name='فعال', default=True, blank=False, null=False)
+    index = models.IntegerField(default=0, verbose_name="مرتب سازی بر اساس عدد - هرچه کوچکتر مقدم تر")
 
     class Meta:
         verbose_name = "نظر"
         verbose_name_plural = 'نظرات'
         db_table = 'comment'
+
+    def save(self, *args, **kwargs):
+        if self.parent_comment is not None:
+            self.index = self.parent_comment.index + 1
+        super(Comment, self).save(*args, **kwargs)
 
     def __str__(self):
         return self.body

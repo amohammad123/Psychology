@@ -1,4 +1,5 @@
 # general modules
+django-cors-headers
 django
 python-decouple
 pillow

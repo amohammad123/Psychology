@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     # "rest_framework_simplejwt",  # todo: uncomment
     "drf_yasg",
     "mail_templated",
+    "corsheaders",
 
     # modules
     'account',
@@ -59,6 +60,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    "corsheaders.middleware.CorsMiddleware",
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -171,3 +173,6 @@ SIMPLE_JWT = {
     'USER_ID_CLAIM': 'user_id',
     'AUTH_TOKEN_CLASSES': ('custom_jwt.views.TokenObtainCustomPairView',),
 }
+
+CORS_ORIGIN_ALLOW_ALL = True
+
