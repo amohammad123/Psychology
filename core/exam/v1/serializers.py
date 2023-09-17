@@ -14,12 +14,5 @@ class CategoriesExamSerializer(MyModelSerializer):
 
     class Meta:
         model = Test
-        exclude = ['is_deleted', 'create_date', 'update_date']
+        exclude = ['is_deleted', 'create_date', 'update_date', 'parent_test']
 
-    # def to_representation(self, instance):
-    #     rep = super().to_representation(instance)
-    #     # rep['rate'] = instance.rates.all().aggregate(rate=Avg('rate'))['rate'] or 0
-    #     rep['like_count'] = instance.rates.filter(like=True).count()
-    #     rep['comment_count'] = instance.rates.filter(comment__isnull=False).count()
-    #
-    #     return rep

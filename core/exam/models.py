@@ -13,7 +13,7 @@ class Test(BaseModel):
     parent_test = models.ForeignKey('self', verbose_name='دسته بندی پدر', on_delete=models.CASCADE, blank=True,
                                     null=True, related_name='parents_test')
     name = models.CharField(verbose_name='نام', max_length=50)
-    index = models.IntegerField(verbose_name='الویت', blank=True, null=True)
+    index = models.IntegerField(default=0, verbose_name='الویت', blank=True, null=True)
     time = models.PositiveIntegerField(verbose_name='زمان', blank=True, null=True)
     result_time = models.PositiveIntegerField(verbose_name='رمان دربافت نتیحه', blank=True, null=True)
     min_age = models.IntegerField(verbose_name='حداقل سن', blank=True, null=True)
@@ -25,6 +25,11 @@ class Test(BaseModel):
         verbose_name = 'تست ها'
         verbose_name_plural = 'تست'
         db_table = 'test'
+
+    def save(self, *args, **kwargs):
+        if self.parent_test is not None:
+            self.index = self.parent_test.index + 1
+        super(Test, self).save(*args, **kwargs)
 
     def __str__(self):
         return f'{self.name} ,parent: {self.parent_test}'

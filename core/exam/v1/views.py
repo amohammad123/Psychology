@@ -25,7 +25,7 @@ class CategoriesTestApiView(generics.ListAPIView):
         category_id = self.kwargs.get(self.lookup_url_kwarg)
         category = Category.objects.get(id=category_id)
         ides = get_sub_ids(obj_id=category_id, obj=category, parent_field='parents_category')
-        queryset = Test.objects.all().filter(category__in=ides, is_deleted=False).annotate(
+        queryset = Test.objects.all().filter(category__in=ides, is_deleted=False, index=0).annotate(
             custom_order=Case(
                 When(category=category_id, then=1),
                 default=2,

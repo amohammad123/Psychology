@@ -15,7 +15,7 @@ class Package(BaseModel):
     parent_package = models.ForeignKey('self', on_delete=models.CASCADE, verbose_name='پکیج پدر', blank=True, null=True,
                                        related_name='parents_package')
     name = models.CharField(verbose_name='نام', max_length=100)
-    index = models.IntegerField(verbose_name='اولویت', blank=True, null=True)
+    index = models.IntegerField(default=0, verbose_name='اولویت', blank=True, null=True)
     order = models.IntegerField(verbose_name='ترتیب', blank=True, null=True)
     summary = models.CharField(verbose_name='خلاصه', max_length=250, blank=True, null=True)
     description = models.TextField(verbose_name='توضیحات', blank=True, null=True)
@@ -32,6 +32,11 @@ class Package(BaseModel):
     def sold(self):
         self.sell_count += 1
         self.save(update_fields=['sell_count'])
+
+    def save(self, *args, **kwargs):
+        if self.parent_package is not None:
+            self.index = self.parent_package.index + 1
+        super(Package, self).save(*args, **kwargs)
 
     class Meta:
         verbose_name = 'پکیج ها'
