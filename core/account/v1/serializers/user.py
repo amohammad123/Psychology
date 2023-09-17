@@ -79,15 +79,15 @@ class GetCodeSerializer(MyModelSerializer):
 
 
 class CodeVerificationSerializer(serializers.Serializer):
-    username = serializers.CharField(max_length=14)
+    phone = serializers.CharField(max_length=14)
     code = serializers.CharField(max_length=15)
 
     def validate(self, attrs):
-        username = attrs.get('username', None)
+        phone = attrs.get('phone', None)
         code = attrs.pop('code', None)
-        if code is None or username is None:
+        if code is None or phone is None:
             raise serializers.ValidationError({'message': 'شماره همراه یا کد وارد نشده است'})
-        user_code = PhoneCode.objects.filter(phone=username, is_active=True).last()
+        user_code = PhoneCode.objects.filter(phone=phone, is_active=True).last()
         if not user_code:
             raise serializers.ValidationError({'message': 'ابتدا کد دربافت کنید'})
         if user_code.expire_date < time_now():
