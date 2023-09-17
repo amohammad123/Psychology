@@ -6,6 +6,12 @@ from account.models.profile import Profile
 from account.models.user import CustomUser
 
 
+class BaseProfileSerializer(MyModelSerializer):
+    class Meta:
+        model = Profile
+        fields = ['id', 'is_trappist', 'first_name', 'last_name', 'image']
+
+
 class SetProfileSerializer(MyModelSerializer):
     class Meta:
         model = Profile

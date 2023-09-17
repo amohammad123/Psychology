@@ -17,7 +17,7 @@ from post.models import Category
 #     queryset = Category.objects.all()
 
 class ListCategoryApiView(generics.ListAPIView):
-    permission_classes = [permissions.IsAuthenticated]  # todo: uncomment
+    # permission_classes = [permissions.IsAuthenticated]  # todo: uncomment
     serializer_class = ListCategorySerializer
     queryset = Category.objects.all().filter(index=0, parent_category__isnull=True, is_deleted=False)
 
