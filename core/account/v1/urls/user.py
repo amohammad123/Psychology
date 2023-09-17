@@ -43,6 +43,8 @@ urlpatterns = [
     # login jwt
     # path("jwt/access", TokenObtainPairView.as_view(), name="jwt-access"),
     # todo: uncomment the bellow lines
+    path('token/', TokenObtainCustomPairView.as_view(), name='token_obtain_pair'),
+
     # path("jwt/access", TokenObtainCustomPairView.as_view(), name="jwt-access"),
     # path("jwt/refresh", TokenRefreshView.as_view(), name="jwt-refresh"),
     # path("jwt/verify", TokenVerifyView.as_view(), name="jwt-verify"),

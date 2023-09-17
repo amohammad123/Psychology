@@ -42,8 +42,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('account.urls')),
     path('', include('post.urls')),
-    # path('test/', include('exam.urls')),
-    # path('package/', include('package.urls')),
+    path('', include('exam.urls')),
+    path('', include('package.urls')),
     # path('payment/', include('payment.urls')),
     # path('prescription/', include('prescription.urls')),
 

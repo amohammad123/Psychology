@@ -1,20 +1,29 @@
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenViewBase
+from rest_framework_simplejwt.views import TokenObtainPairView
+from django.http import HttpResponse
+
 from rest_framework import generics, status, views, mixins
 from rest_framework import permissions
 
 from account.v1.serializers.user import (TokenObtainCustomPairSerializer, GetCodeSerializer, CodeVerificationSerializer,
-                                        SetPasswordSerializer, ChangePasswordSerializer)
+                                         SetPasswordSerializer, ChangePasswordSerializer)
 from account.models.user import CustomUser, PhoneCode
 from conf.time import time_now
 
 
-class TokenObtainCustomPairView(TokenViewBase):
+class TokenObtainCustomPairView(TokenObtainPairView):
     """
     custom token jwt
     """
     serializer_class = TokenObtainCustomPairSerializer
+
+    def post(self, request, *args, **kwargs):
+        res = super().post(request, *args, **kwargs)
+        if 'access' in res.data:
+            res.set_cookie(key='access_token', value=res.data['access'], httponly=True)
+        return res
 
 
 class GetCodeApiView(generics.GenericAPIView):

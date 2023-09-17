@@ -164,7 +164,7 @@ class Comment(BaseModel):
                                        on_delete=models.CASCADE, related_name='parents_comment')
     post = models.ForeignKey(Post, verbose_name='پست', on_delete=models.CASCADE, related_name='comments')
     body = models.TextField(verbose_name='محتوا', max_length=300)
-    is_enable = models.BooleanField(verbose_name='فعال', default=False, blank=False, null=False)
+    is_enable = models.BooleanField(verbose_name='فعال', default=True, blank=False, null=False)
 
     class Meta:
         verbose_name = "نظر"

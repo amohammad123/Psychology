@@ -88,7 +88,7 @@ class CategoryDetailSerializer(MyModelSerializer):
 
     class Meta:
         model = Category
-        exclude = ['is_deleted', 'update_date', 'create_date', 'published_date', 'comment_status']
+        exclude = ['is_deleted', 'update_date', 'create_date']
 
     def to_representation(self, instance):
         rep = super().to_representation(instance)
