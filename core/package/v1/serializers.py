@@ -1,3 +1,5 @@
+import base64
+
 from rest_framework import serializers
 from conf.model import MyModelSerializer
 from django.core import exceptions
@@ -24,5 +26,6 @@ class CategoriesPackageSerializer(MyModelSerializer):
         # rep['rate'] = instance.rates.all().aggregate(rate=Avg('rate'))['rate'] or 0
         rep['like_count'] = instance.rates.filter(like=True).count()
         rep['comment_count'] = instance.rates.filter(comment__isnull=False).count()
+        
 
         return rep

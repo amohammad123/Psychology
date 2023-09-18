@@ -4,6 +4,7 @@ from django.core import exceptions
 
 from post.models import (Category, Post)
 from package.models import Package
+from exam.models import Test
 from conf.functions import get_sub_ids
 
 
@@ -98,11 +99,12 @@ class CategoryDetailSerializer(MyModelSerializer):
             rep['sub_category'] = BaseCategorySerializer(Category.objects.filter(parent_category=category_id),
                                                          many=True).data
             # rep['posts_count'] = category.posts.all().count()
-            rep['posts_count'] = Post.objects.filter(
-                category__in=get_sub_ids(obj_id=category_id, obj=category, parent_field='parents_category'),
-                is_deleted=False, status='published').count()
-            rep['tests_count'] = category.tests.all().count()
-            rep['packages_count'] = category.packages.all().count()
+            fiter_query = {
+                'category__in': get_sub_ids(obj_id=category_id, obj=category, parent_field='parents_category'),
+                'is_deleted': False}
+            rep['posts_count'] = Post.objects.filter(status='published', **fiter_query).count()
+            rep['tests_count'] = Test.objects.filter(**fiter_query, index=0).count()
+            rep['packages_count'] = Package.objects.filter(**fiter_query, index=0).count()
             rep['categories_count'] = category.parents_category.all().count()
         except Category.DoesNotExist:
             raise serializers.ValidationError({'message': 'دسته بندی مورد نظر یافت نشد'})
