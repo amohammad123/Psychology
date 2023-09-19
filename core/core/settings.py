@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     "drf_yasg",
     "mail_templated",
     "corsheaders",
+    "django_filters",
 
     # modules
     'account',
@@ -131,10 +132,16 @@ USE_I18N = True
 USE_TZ = True
 
 REST_FRAMEWORK = {
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
+}
+
+REST_FRAMEWORK = {
     # todo: uncomment
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-    )
+    ),
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
+
 }
 
 

@@ -127,6 +127,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+core/conf/old_code.py
 
 # Spyder project settings
 .spyderproject

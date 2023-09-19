@@ -1,11 +1,11 @@
 # general modules
-django-cors-headers
 django
-python-decouple
-pillow
 djangorestframework
 djangorestframework-simplejwt
-# django-filter
+django-cors-headers
+django-filter
+python-decouple
+pillow
 
 # instead of jwt for version 2
 # djoser
