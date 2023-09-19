@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from django.core.validators import MaxValueValidator, MinValueValidator
 from account.models.profile import validate_is_not_trappist, validate_is_trappist
 from conf.model import BaseModel
 
@@ -19,7 +20,7 @@ class Test(BaseModel):
     min_age = models.IntegerField(verbose_name='حداقل سن', blank=True, null=True)
     max_age = models.IntegerField(verbose_name='حداکثر سن', blank=True, null=True)
     explanation = models.TextField(verbose_name='توضیحات', blank=True, null=True)
-    question_count = models.IntegerField(verbose_name='تعداد سوالات', blank=True, null=True)
+    question_count = models.IntegerField(verbose_name='تعداد سوالات', default=0)
 
     class Meta:
         verbose_name = 'تست ها'
@@ -33,6 +34,25 @@ class Test(BaseModel):
 
     def __str__(self):
         return f'{self.name} ,parent: {self.parent_test}'
+
+
+class TestRate(BaseModel):
+    user = models.ForeignKey('account.Profile', on_delete=models.CASCADE, verbose_name='کاربر',
+                             related_name='test_retes')
+    test = models.ForeignKey(Test, on_delete=models.CASCADE, verbose_name='پکیج', related_name='rates')
+    comment = models.TextField(verbose_name='نظر', blank=True, null=True)
+    rate = models.IntegerField(verbose_name='امتیاز', validators=[MinValueValidator(0), MaxValueValidator(5)],
+                               blank=True, null=True)
+    like = models.BooleanField(verbose_name='لایک', blank=True, null=True)
+
+    class Meta:
+        unique_together = ('user', 'test',)
+        verbose_name = 'امتیاز تست'
+        verbose_name_plural = verbose_name
+        db_table = 'test_rate'
+
+    def __str__(self):
+        return f'{self.test} - {self.rate}'
 
 
 class TestPayment(BaseModel):

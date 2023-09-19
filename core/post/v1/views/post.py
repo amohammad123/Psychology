@@ -24,7 +24,7 @@ class CategoriesPostApiView(generics.ListAPIView):
     lookup_url_kwarg = 'category_id'
     pagination_class = CustomCategoriesItemPagination
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
-    filterset_fields = ['category', 'comment_status']
+    filterset_fields = ['category', 'comment_status', 'tags']
     search_fields = ['title', 'category__name', 'body', 'author__first_name', 'author__last_name', 'rates__comment']
 
     def get_queryset(self):

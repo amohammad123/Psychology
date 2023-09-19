@@ -91,6 +91,7 @@ class Post(BaseModel):
     comment_status = models.CharField(verbose_name='وضعیت کامنت', max_length=20, choices=comment_choices, blank=True,
                                       null=True)
     views = models.PositiveIntegerField(verbose_name='تعداد بازدید کنندگان', default=0, blank=True, null=True)
+    time_to_read = models.PositiveIntegerField(verbose_name='مدت زمان مطالعه', default=0, blank=True, null=True)
 
     class Meta:
         verbose_name = 'پست'

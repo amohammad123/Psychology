@@ -57,6 +57,8 @@ class Ordering:
                 '-price': '-payment__offer_price',
                 'time': 'time',
                 '-time': '-time',
+                'like': 'rates__like',
+                '-like': '-rates__like',
                 'min_age': 'min_age',
                 '-min_age': '-min_age',
                 'max_age': 'max_age',
@@ -66,13 +68,11 @@ class Ordering:
             }
         if self.model_name == 'Post':
             items = {
-                'time': 'time',
-                '-time': '-time',
-                'min_age': 'min_age',
-                '-min_age': '-min_age',
-                'max_age': 'max_age',
-                '-max_age': '-max_age',
-                'question': 'question_count',
-                '-question': '-question_count',
+                'view': 'views',
+                '-view': '-views',
+                'time_to_read': 'time_to_read',
+                '-time_to_read': '-time_to_read',
+                'like': 'rates__like',
+                '-like': '-rates__like',
             }
         return items
