@@ -11,8 +11,8 @@ from conf.functions import (get_sub_ids, Ordering)
 from conf.pagination import (CustomCategoriesItemPagination)
 
 from account.permissions import ClientPermission
-from post.v1.serializers.post import (CategoriesPostSerializer)
-from post.models import Post, Category
+from post.v1.serializers.post import (CategoriesPostSerializer, TagIdsSerializer)
+from post.models import Post, Category, Tag
 
 
 class CategoriesPostApiView(generics.ListAPIView):
@@ -35,3 +35,8 @@ class CategoriesPostApiView(generics.ListAPIView):
         queryset = Ordering(request=self.request, queryset=queryset, category_id=category_id).get_order()
 
         return queryset
+
+
+class TagIdsApiView(generics.CreateAPIView):
+    queryset = Tag.objects.all()
+    serializer_class = TagIdsSerializer

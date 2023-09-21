@@ -34,3 +34,16 @@ class CategoriesPostSerializer(MyModelSerializer):
         rep['like_count'] = instance.rates.filter(like=True).count()
         rep['comment_count'] = instance.comments.filter(is_enable=True).count()
         return rep
+
+
+class TagIdsSerializer(serializers.Serializer):
+    tags = serializers.ListSerializer(child=serializers.CharField())
+
+    def create(self, validated_data):
+        tag_names = validated_data.get('tags', [])
+        tag_ids = []
+        for tag_name in tag_names:
+            tag, created = Tag.objects.get_or_create(name=tag_name)
+            tag_ids.append(tag.id if tag is not None else created.id)
+        validated_data['tags'] = tag_ids
+        return validated_data

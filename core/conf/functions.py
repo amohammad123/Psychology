@@ -17,23 +17,31 @@ def get_sub_ids(obj_id, obj, parent_field):
 
 
 class Ordering:
-    def __init__(self, request, queryset, category_id):
+    def __init__(self, request, queryset, category_id=None):
         self.request = request
+        self.category_id = category_id
         self.model_name = queryset.model.__name__
-        self.queryset = queryset.annotate(
-            custom_order=Case(
-                When(category=category_id, then=1),
-                default=2,
-                output_field=IntegerField()
+        if category_id is not None:
+            self.queryset = queryset.annotate(
+                custom_order=Case(
+                    When(category=category_id, then=1),
+                    default=2,
+                    output_field=IntegerField()
+                )
             )
-        )
+        else:
+            self.queryset = queryset
         self.ordering_param_map = self.ordering_items()
 
     def get_order(self):
         list(self.ordering_param_map.keys())
         ordering_param = self.request.GET.get('ordering')
-        actual_ordering = self.ordering_param_map.get(ordering_param, 'custom_order')
-        queryset = self.queryset.order_by(actual_ordering, 'custom_order', '-create_date', '-update_date')
+        if self.category_id is not None:
+            actual_ordering = self.ordering_param_map.get(ordering_param, 'custom_order')
+            queryset = self.queryset.order_by(actual_ordering, 'custom_order', '-create_date', '-update_date')
+        else:
+            actual_ordering = self.ordering_param_map.get(ordering_param, '-create_date')
+            queryset = self.queryset.order_by(actual_ordering, '-create_date', '-update_date')
 
         return queryset
 

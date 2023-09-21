@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Sum
 from django.core.validators import MaxValueValidator, MinValueValidator
 
 from account.models.profile import validate_is_not_trappist, validate_is_trappist
@@ -20,10 +21,11 @@ class Package(BaseModel):
     summary = models.CharField(verbose_name='خلاصه', max_length=250, blank=True, null=True)
     description = models.TextField(verbose_name='توضیحات', blank=True, null=True)
     prerequisite = models.TextField(verbose_name='پیش نیاز', blank=True, null=True)
-    time = models.PositiveIntegerField(verbose_name='مدت زمان دوره', blank=True, null=True)
+    time = models.PositiveIntegerField(verbose_name='مدت زمان دوره', default=0)
     views = models.PositiveIntegerField(verbose_name='تعداد بازدید کنندگان', default=0, blank=True, null=True)
     sell_count = models.PositiveIntegerField(verbose_name='تعداد فروش دوزه', default=0)
     tags = models.ManyToManyField('post.Tag', verbose_name='تگ ها', related_name='package')
+
 
     def viewed(self):
         self.views += 1
@@ -85,9 +87,12 @@ class PackagePayment(BaseModel):
     offer_price = models.PositiveIntegerField(verbose_name='قیمت با تخفیف', blank=True, null=True)
 
     def get_percent(self):
-        off_price = (self.original_price - self.offer_price)
-        percent = float(off_price / self.original_price) * 100
-        return percent
+        if self.original_price is not None and self.offer_price is not None:
+            off_price = (self.original_price - self.offer_price)
+            percent = float(off_price / self.original_price) * 100
+            return percent
+        else:
+            return None
 
     class Meta:
         verbose_name = 'قیمت پکیج'
@@ -95,7 +100,7 @@ class PackagePayment(BaseModel):
         db_table = 'package_payment'
 
     def __str__(self):
-        return self.package
+        return f'{self.package}'
 
 
 class PackageRate(BaseModel):
