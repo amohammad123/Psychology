@@ -10,7 +10,7 @@ from conf.functions import (get_sub_ids, Ordering)
 from conf.pagination import (CustomCategoriesItemPagination)
 from account.permissions import ClientPermission
 
-from package.v1.serializers import (CategoriesPackageSerializer, DetailPackageSerializer)
+from package.v1.serializers import (CategoriesPackageSerializer, ParentPackageSerializer)
 from post.models import Category
 from package.models import Package
 
@@ -43,7 +43,7 @@ class CreateMainPackageApiView(generics.CreateAPIView):
     this view create package
     """
     # permission_classes = [permissions.IsAuthenticated] # todo: uncomment
-    serializer_class = DetailPackageSerializer
+    serializer_class = ParentPackageSerializer
     queryset = Package.objects.all()
 
     def get_serializer_context(self):
@@ -54,7 +54,7 @@ class CreateMainPackageApiView(generics.CreateAPIView):
 
 class PackageViewSet(viewsets.ModelViewSet):
     queryset = Package.objects.all()
-    serializer_class = DetailPackageSerializer
+    serializer_class = ParentPackageSerializer
     pagination_class = CustomCategoriesItemPagination
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
     filterset_fields = ['category', 'tags']

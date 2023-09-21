@@ -12,7 +12,7 @@ from rest_framework.exceptions import ValidationError
 class Package(BaseModel):
     user = models.ForeignKey('account.Profile', on_delete=models.CASCADE, related_name='packages', verbose_name='کاربر')
     category = models.ManyToManyField('post.Category', verbose_name='دسته بندی',
-                                      related_name='packages')
+                                      related_name='packages', blank=True, null=True)
     parent_package = models.ForeignKey('self', on_delete=models.CASCADE, verbose_name='پکیج پدر', blank=True, null=True,
                                        related_name='parents_package')
     name = models.CharField(verbose_name='نام', max_length=100)
@@ -26,7 +26,6 @@ class Package(BaseModel):
     sell_count = models.PositiveIntegerField(verbose_name='تعداد فروش دوزه', default=0)
     tags = models.ManyToManyField('post.Tag', verbose_name='تگ ها', related_name='package')
 
-
     def viewed(self):
         self.views += 1
         self.save(update_fields=['views'])
@@ -36,8 +35,10 @@ class Package(BaseModel):
         self.save(update_fields=['sell_count'])
 
     def save(self, *args, **kwargs):
-        if self.parent_package is not None:
+        if self.parent_package is not None and self.parent_package.pk is not None:
             self.index = self.parent_package.index + 1
+            self.category.set(self.parent_package.category.all())
+
         super(Package, self).save(*args, **kwargs)
 
     class Meta:

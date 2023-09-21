@@ -56,7 +56,7 @@ class PackageLikeSerializer(MyModelSerializer):
         fields = ['like']
 
 
-class DetailPackageSerializer(MyModelSerializer):
+class ParentPackageSerializer(MyModelSerializer):
     tags = serializers.ListSerializer(child=serializers.CharField(), required=False)
     category = serializers.ListSerializer(child=serializers.CharField(), required=False)
     files = PackageFileSerializer(many=True)
