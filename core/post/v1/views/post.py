@@ -8,7 +8,7 @@ from django.db.models import Case, When, IntegerField
 
 from conf.time import time_now
 from conf.functions import (get_sub_ids, Ordering)
-from conf.pagination import (CustomCategoriesItemPagination)
+from conf.pagination import (CustomItemPagination)
 
 from account.permissions import ClientPermission
 from post.v1.serializers.post import (CategoriesPostSerializer, TagIdsSerializer)
@@ -22,7 +22,7 @@ class CategoriesPostApiView(generics.ListAPIView):
     # permission_classes = [permissions.IsAuthenticated] # todo: uncomment
     serializer_class = CategoriesPostSerializer
     lookup_url_kwarg = 'category_id'
-    pagination_class = CustomCategoriesItemPagination
+    pagination_class = CustomItemPagination
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
     filterset_fields = ['category', 'comment_status', 'tags']
     search_fields = ['title', 'category__name', 'body', 'author__first_name', 'author__last_name', 'rates__comment']

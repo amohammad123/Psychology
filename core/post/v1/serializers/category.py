@@ -5,7 +5,7 @@ from django.core import exceptions
 from post.models import (Category, Post)
 from package.models import Package
 from exam.models import Test
-from conf.functions import get_sub_ids
+from conf.functions import (get_sub_ids)
 
 
 # todo: complete this serializer for create category by admin

@@ -9,7 +9,7 @@ from rest_framework import filters
 from conf.time import time_now
 from conf.functions import (get_sub_ids, Ordering)
 from account.permissions import ClientPermission
-from conf.pagination import (CustomCategoriesItemPagination)
+from conf.pagination import (CustomItemPagination)
 
 from exam.v1.serializers import (CategoriesExamSerializer)
 from post.models import Category
@@ -23,7 +23,7 @@ class CategoriesTestApiView(generics.ListAPIView):
     # permission_classes = [permissions.IsAuthenticated] # todo: uncomment
     serializer_class = CategoriesExamSerializer
     lookup_url_kwarg = 'category_id'
-    pagination_class = CustomCategoriesItemPagination
+    pagination_class = CustomItemPagination
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
     filterset_fields = ['category']
     search_fields = ['name', 'category__name', 'explanation']

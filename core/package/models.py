@@ -88,10 +88,12 @@ class PackagePayment(BaseModel):
     offer_price = models.PositiveIntegerField(verbose_name='قیمت با تخفیف', blank=True, null=True)
 
     def get_percent(self):
+        if self.original_price == 0:
+            return 0
         if self.original_price is not None and self.offer_price is not None:
             off_price = (self.original_price - self.offer_price)
             percent = float(off_price / self.original_price) * 100
-            return percent
+            return round(percent, 1)
         else:
             return None
 

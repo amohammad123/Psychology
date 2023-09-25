@@ -12,7 +12,7 @@ def update_package_time(sender, instance, **kwargs):
         package.save()
 
 
-@receiver(pre_save, sender=Package)
-def set_category_from_parent(sender, instance, **kwargs):
-    if not instance.category.exists() and instance.parent_package.category:
-        instance.category.set(instance.parent_package.category)
+# @receiver(pre_save, sender=Package)
+# def set_category_from_parent(sender, instance, **kwargs):
+#     if not instance.category.exists() and instance.parent_package.category:
+#         instance.category.set(instance.parent_package.category)
