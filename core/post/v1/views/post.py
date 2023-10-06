@@ -1,6 +1,6 @@
 from django.db.models import Q
 from rest_framework.response import Response
-from rest_framework import generics, status, views, mixins
+from rest_framework import generics, status, views, mixins, viewsets
 from rest_framework import permissions
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
@@ -11,7 +11,7 @@ from conf.functions import (get_sub_ids, Ordering)
 from conf.pagination import (CustomItemPagination)
 
 from account.permissions import ClientPermission
-from post.v1.serializers.post import (CategoriesPostSerializer, TagIdsSerializer)
+from post.v1.serializers.post import (CategoriesPostSerializer, PostSerializer)
 from post.models import Post, Category, Tag
 
 
@@ -37,6 +37,25 @@ class CategoriesPostApiView(generics.ListAPIView):
         return queryset
 
 
-class TagIdsApiView(generics.CreateAPIView):
-    queryset = Tag.objects.all()
-    serializer_class = TagIdsSerializer
+# class TagIdsApiView(generics.CreateAPIView):
+#     queryset = Tag.objects.all()
+#     serializer_class = TagIdsSerializer
+
+
+class PostViewSet(viewsets.ModelViewSet):
+    queryset = Post.objects.all().filter(is_deleted=False)
+    serializer_class = PostSerializer
+    pagination_class = CustomItemPagination
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter]
+    filterset_fields = ['category', 'comment_status', 'tags']
+    search_fields = ['title', 'category__name', 'body', 'author__first_name', 'author__last_name', 'rates__comment']
+
+    def list(self, request, *args, **kwargs):
+        self.serializer_class = CategoriesPostSerializer
+        self.queryset = Post.objects.all().filter(is_deleted=False, status='published')
+        self.queryset = Ordering(request=self.request, queryset=self.queryset, category_id=None).get_order()
+        return super().list(request, *args, **kwargs)
+    
+    def retrieve(self, request, *args, **kwargs):
+        self.get_object().viewed()
+        return super().retrieve(request, *args, **kwargs)

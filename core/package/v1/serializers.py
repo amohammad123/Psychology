@@ -14,7 +14,7 @@ from conf.serializer_functions import (SerializerItems)
 from package.models import Package, PackageFile, PackagePayment, PackageRate
 from account.models.profile import Profile
 from account.v1.serializers.profile import BaseProfileSerializer
-from post.v1.serializers.post import BaseTagSerializer, TagIdsSerializer
+from post.v1.serializers.post import BaseTagSerializer
 from post.v1.serializers.category import BaseCategorySerializer
 
 

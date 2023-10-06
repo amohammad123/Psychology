@@ -1,11 +1,14 @@
-from django.urls import path
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
 
-from post.v1.views.post import (CategoriesPostApiView, TagIdsApiView)
+from post.v1.views.post import (CategoriesPostApiView, PostViewSet)
+
+router = DefaultRouter()
+router.register(r'post', PostViewSet)
 
 urlpatterns = [
     # get all posts of category
     path('category/<uuid:category_id>/posts', CategoriesPostApiView.as_view(), name='category-posts'),
-    path('tags', TagIdsApiView.as_view(), name='Tags'),
-    # set trappist profile
-    # path('set/trappist', TrappistSetProfileApiView.as_view(), name='set-trappist-profile'),
+    # path('tags', TagIdsApiView.as_view(), name='Tags'),
+    path('', include(router.urls))
 ]
